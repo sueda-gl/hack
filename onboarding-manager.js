@@ -1,16 +1,15 @@
 // Onboarding Manager
-// Handles tutorial flow with curated battles to teach game mechanics
+// Handles tutorial flow with curated battles to teach 4-outcome system mechanics
 
-// Curated battle sequences for onboarding
+// Curated battle sequences for onboarding - now showcasing all 4 outcome types
 const ONBOARDING_BATTLES = [
     {
         step: 1,
         aiConcept: "Fire",
         emoji: "🔥",
         hintTitle: "AI ATTACKED WITH: FIRE",
-        hintText: "Fire is hot and destructive. You need something that cools and smothers flames.\n\n💡 Try typing: WATER",
-        logicTeaser: "Some elements have natural dominance based on physical rules.",
-        lessonAfter: "✅ YOU LEARNED:\n\nBasic interactions follow real-world intuition.\nWater naturally extinguishes fire through cooling and smothering."
+        hintText: "Fire burns and destroys. You need something that naturally extinguishes flames.\n\n💡 Try typing: WATER\n\nLogic: Some elements have natural dominance.",
+        lessonAfter: "✅ YOU LEARNED: DIRECT WIN\n\nWater extinguishes fire, BUT then the water continues forward unimpeded! With nothing left to stop it, the water damages AI's castle.\n\nThe damage isn't from extinguishing - it's because your defense kept going and hit their tower."
     },
     {
         step: 2,
@@ -18,42 +17,46 @@ const ONBOARDING_BATTLES = [
         emoji: "⚗️",
         hintTitle: "AI ATTACKED WITH: SODIUM",
         hintText: "Sodium is a highly reactive metal. What happens when reactive metals meet liquids?\n\n💡 Try typing: WATER\n\n(This might surprise you...)",
-        logicTeaser: "Some reactions create unexpected consequences...",
-        lessonAfter: "💥 YOU LEARNED:\n\nNot all wins are clean! Chemistry creates violent chain reactions.\nSodium + Water = Explosive hydrogen gas. Both sides can take damage."
+        lessonAfter: "💥 YOU LEARNED: BACKFIRE\n\nYour defense AMPLIFIED the threat! Water reacts violently with sodium, causing an explosion at YOUR tower.\n\nSometimes your defense can make things worse by acting as fuel, conductor, or amplifier for the attack."
     },
     {
         step: 3,
         aiConcept: "Nuclear Weapon",
         emoji: "☢️",
         hintTitle: "AI ATTACKED WITH: NUCLEAR WEAPON",
-        hintText: "Physical weapons need physical targets to destroy. What exists everywhere with no single point of failure?\n\n💡 Try typing: YOUTUBE",
-        logicTeaser: "Decentralized systems live across thousands of servers.",
-        lessonAfter: "🌐 YOU LEARNED:\n\nDigital and distributed systems follow different rules than physical objects.\nYouTube exists on servers worldwide - you can't nuke the cloud!"
+        hintText: "Physical weapons destroy physical targets. What exists everywhere with no single point of failure?\n\n💡 Try typing: YOUTUBE\n\nLogic: Decentralized systems survive physical attacks.",
+        lessonAfter: "🚫 YOU LEARNED: INEFFECTIVE ATTACK\n\nThe nuclear attack happens but is INEFFECTIVE! YouTube has no single point of failure - it exists on thousands of servers worldwide.\n\nDestroying one location doesn't destroy the concept. BOTH towers safe!"
     },
     {
         step: 4,
-        aiConcept: "Echo Chamber",
-        emoji: "🔊",
-        hintTitle: "AI ATTACKED WITH: ECHO CHAMBER",
-        hintText: "Echo chambers amplify any sound infinitely in a feedback loop. What creature makes a loud, repetitive noise?\n\n💡 Try typing: DUCK",
-        logicTeaser: "Environments create powerful multipliers.",
-        lessonAfter: "🦆 YOU LEARNED:\n\nSynergy matters! Weak items become powerful in the right context.\nA duck's quack amplified infinitely collapses the chamber."
+        aiConcept: "Lightning",
+        emoji: "⚡",
+        hintTitle: "AI ATTACKED WITH: LIGHTNING",
+        hintText: "A powerful bolt of lightning. What has equal power that would collide symmetrically?\n\n💡 Try typing: LIGHTNING\n\nLogic: Identical forces destroy each other.",
+        lessonAfter: "⚔️ YOU LEARNED: MUTUAL DESTRUCTION\n\nTwo identical forces collide with equal power, destroying each other!\n\nWhen symmetric concepts meet, neither dominates. BOTH towers take damage equally."
     },
     {
         step: 5,
         aiConcept: "Laser Pointer",
         emoji: "🔴",
         hintTitle: "AI ATTACKED WITH: LASER POINTER",
-        hintText: "Just a harmless dot of red light. What creature has an instinctive, uncontrollable obsession with chasing it?\n\n💡 Try typing: CAT",
-        logicTeaser: "Instincts and behavior can override raw power.",
-        lessonAfter: "🐈 YOU LEARNED:\n\nPersonality and instinct beat brute force!\nA cat's hunting instinct makes it the ultimate laser pointer counter.\n\n🎓 TUTORIAL COMPLETE! You've mastered the mechanics!"
+        hintText: "Just a harmless dot of red light. What creature has an evolutionary obsession with chasing it?\n\n💡 Try typing: CAT\n\nLogic: Some things AMPLIFY power instead of blocking.",
+        lessonAfter: "🐈 YOU LEARNED: Power Amplification\n\nThe laser pointer AMPLIFIES the cat's hunting instinct to maximum! The cat's predatory focus becomes unstoppable. Another DIRECT WIN."
+    },
+    {
+        step: 6,
+        aiConcept: "Echo Chamber",
+        emoji: "🔊",
+        hintTitle: "AI ATTACKED WITH: ECHO CHAMBER",
+        hintText: "Echo chambers amplify sound infinitely in a feedback loop. What creature makes a loud, repetitive noise?\n\n💡 Try typing: DUCK\n\nLogic: Environments can become your weapon.",
+        lessonAfter: "🦆 YOU LEARNED: Environmental Amplification\n\nThe echo chamber AMPLIFIES your duck's quack infinitely! The feedback loop becomes so powerful it collapses the chamber.\n\nA weak concept becomes overwhelming in the right environment. Another DIRECT WIN!\n\n🎓 TUTORIAL COMPLETE!\n\nYou've mastered all 4 outcome types:\n✨ Direct Win | 💥 Backfire | 🚫 Ineffective Attack | ⚔️ Mutual Destruction\n\n⚔️ WELCOME TO THE REAL GAME!\n\nRemember: An LLM is leading this game in REAL-TIME. Every battle is uniquely evaluated.\n\nBE CREATIVE. There is NO LIMIT to what you can come up with. Black holes, abstract concepts, emotions, quantum physics - anything works!\n\nFigure out the mechanics. Learn from each battle. Beat the AI at its own game!"
     }
 ];
 
 // Onboarding state
 const onboardingState = {
     active: true,           // Always true on page load
-    currentStep: 0,         // Current battle (0-4)
+    currentStep: 0,         // Current battle (0-5 for 6 total battles)
     phase: null,            // 'hint' | 'battle' | 'lesson'
     isPaused: false,        // Game animation pause state
     waitingForNextBattle: false
@@ -61,7 +64,7 @@ const onboardingState = {
 
 // Start onboarding sequence
 function startOnboarding() {
-    console.log('🎓 Starting onboarding tutorial...');
+    console.log('🎓 Starting onboarding tutorial with 4-outcome system...');
     onboardingState.active = true;
     onboardingState.currentStep = 0;
     onboardingState.phase = 'hint';
@@ -88,8 +91,8 @@ function showHintBanner(step) {
     pauseGame();
     
     const title = `${battle.emoji} ${battle.hintTitle}`;
-    const message = `${battle.hintText}\n\n${battle.logicTeaser}`;
-    const stepIndicator = `\n\nStep ${step + 1} of 5`;
+    const message = battle.hintText;
+    const stepIndicator = `\n\nStep ${step + 1} of 6`;
     
     displayOnboardingBanner(
         title + stepIndicator,
@@ -117,7 +120,7 @@ function showLessonBanner(step) {
     
     const isLastBattle = (step === ONBOARDING_BATTLES.length - 1);
     const buttonText = isLastBattle ? 'Start Real Game →' : 'Next Battle →';
-    const stepIndicator = `\n\nCompleted: ${step + 1} of 5`;
+    const stepIndicator = `\n\nCompleted: ${step + 1} of 6`;
     
     displayOnboardingBanner(
         battle.lessonAfter + stepIndicator,
@@ -238,4 +241,3 @@ function getCurrentStep() {
 function isGamePaused() {
     return onboardingState.isPaused;
 }
-

@@ -207,7 +207,7 @@ function displayOnboardingBanner(title, message, buttonText, callback) {
     }
     
     // Create button
-    const button = document.createElement('button');
+    const button = document.createElement('div');
     button.textContent = buttonText;
     button.className = 'attack-button blue-button';
     button.style.marginTop = '15px';
@@ -232,5 +232,58 @@ function displayOnboardingBanner(title, message, buttonText, callback) {
     
     // Show the box
     centerBox.classList.add('visible');
+}
+
+// Get player-facing label for outcome type
+function getOutcomeLabel(outcome_type) {
+    const labels = {
+        'direct_win': '✨ DIRECT HIT',
+        'backfire_win': '💥 BACKFIRE',
+        'neutral_no_damage': '🚫 INEFFECTIVE',
+        'mutual_destruction': '⚔️ MUTUAL DESTRUCTION'
+    };
+    return labels[outcome_type] || '⚔️ BATTLE';
+}
+
+// Display reasoning with outcome label (new 4-outcome system)
+function displayReasoningWithOutcome(explanation, outcome_type, team) {
+    // Only show once (not for both teams)
+    if (team === 'red') return;
+    
+    const centerBox = document.getElementById('center-reasoning');
+    const textEl = document.getElementById('center-reasoning-text');
+    
+    if (!centerBox || !textEl) return;
+    
+    // Clear previous text
+    textEl.textContent = '';
+    
+    // Get outcome label
+    const outcomeLabel = getOutcomeLabel(outcome_type);
+    
+    // Show the box
+    centerBox.classList.add('visible');
+    
+    // Create full text with label
+    const fullText = `${outcomeLabel}\n\n${explanation}`;
+    
+    // Typewriter effect
+    let charIndex = 0;
+    const typingSpeed = 50; // milliseconds per character
+    
+    function typeNextChar() {
+        if (charIndex < fullText.length) {
+            textEl.textContent += fullText.charAt(charIndex);
+            charIndex++;
+            setTimeout(typeNextChar, typingSpeed);
+        } else {
+            // After typing is complete, wait 5 seconds then fade out
+            setTimeout(() => {
+                centerBox.classList.remove('visible');
+            }, 5000);
+        }
+    }
+    
+    typeNextChar();
 }
 

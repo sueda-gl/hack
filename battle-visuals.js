@@ -670,3 +670,182 @@ async function createCenterCollision(visual1, visual2, winner) {
     }
 }
 
+// BACKFIRE collision - explosion happens at DEFENDER'S tower location
+async function createBackfireCollision(attackVisual, defendVisual) {
+    console.log('Creating BACKFIRE collision - defender\'s concept explodes on them!');
+    
+    gameState.isProcessing = true;
+    
+    // Find the defender's tower (blue team)
+    const blueTower = towers.find(t => t.userData.team === 'blue');
+    const defenderPos = blueTower ? blueTower.position.clone() : new THREE.Vector3(-10, 0, 0);
+    defenderPos.y = 5; // Explosion height
+    
+    // Both characters move toward center initially
+    const centerPos = new THREE.Vector3(0, 0, 0);
+    
+    // Zoom to center
+    await cameraZoomToCenter(centerPos, 1000);
+    
+    // Characters meet at center
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // BACKFIRE! Explosion travels BACK to defender's tower
+    console.log('BACKFIRE! Explosion moving to defender tower...');
+    
+    // Create orange/red backfire explosion effect
+    const backfireColor = 0xff6600; // Orange-red
+    
+    // Create traveling explosion from center to defender
+    for (let i = 0; i <= 10; i++) {
+        const t = i / 10;
+        const explosionPos = new THREE.Vector3().lerpVectors(centerPos, defenderPos, t);
+        
+        // Create explosion particle
+        const explosionGeometry = new THREE.SphereGeometry(2 + i * 0.5, 16, 16);
+        const explosionMaterial = new THREE.MeshBasicMaterial({ 
+            color: backfireColor,
+            transparent: true,
+            opacity: 0.8 - t * 0.5
+        });
+        const explosionSphere = new THREE.Mesh(explosionGeometry, explosionMaterial);
+        explosionSphere.position.copy(explosionPos);
+        scene.add(explosionSphere);
+        
+        // Remove after short delay
+        setTimeout(() => {
+            scene.remove(explosionSphere);
+            explosionGeometry.dispose();
+            explosionMaterial.dispose();
+        }, 300);
+        
+        await new Promise(resolve => setTimeout(resolve, 80));
+    }
+    
+    // Big explosion at defender's tower
+    cameraShake(1.2, 50);
+    createExplosion(defenderPos);
+    createExplosionBurst(defenderPos, 'red'); // Red/orange burst
+    
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Zoom out
+    await cameraZoomOut(2000);
+    
+    // Remove both characters
+    if (attackVisual) {
+        scene.remove(attackVisual);
+        if (attackVisual.geometry) attackVisual.geometry.dispose();
+        if (attackVisual.material) attackVisual.material.dispose();
+    }
+    if (defendVisual) {
+        scene.remove(defendVisual);
+        if (defendVisual.geometry) defendVisual.geometry.dispose();
+        if (defendVisual.material) defendVisual.material.dispose();
+    }
+    
+    gameState.activeProjectiles = [];
+    gameState.isProcessing = false;
+    
+    console.log('Backfire collision complete');
+}
+
+// PHASE THROUGH effect - no explosion, concepts don't interact
+async function createPhaseThroughEffect(visual1, visual2) {
+    console.log('Creating PHASE THROUGH effect - no damage, domain mismatch');
+    
+    gameState.isProcessing = true;
+    
+    const centerPos = new THREE.Vector3(0, 0, 0);
+    
+    // Zoom to center
+    await cameraZoomToCenter(centerPos, 1000);
+    
+    // Characters move toward each other
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Make characters semi-transparent as they "phase through"
+    if (visual1 && visual1.traverse) {
+        visual1.traverse((child) => {
+            if (child.material) {
+                child.material.transparent = true;
+                child.material.opacity = 0.5;
+            }
+        });
+    }
+    if (visual2 && visual2.traverse) {
+        visual2.traverse((child) => {
+            if (child.material) {
+                child.material.transparent = true;
+                child.material.opacity = 0.5;
+            }
+        });
+    }
+    
+    // Create sparkle/shimmer effect instead of explosion
+    for (let i = 0; i < 20; i++) {
+        const sparkleGeometry = new THREE.SphereGeometry(0.2, 8, 8);
+        const sparkleMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.8
+        });
+        const sparkle = new THREE.Mesh(sparkleGeometry, sparkleMaterial);
+        
+        // Random position around center
+        sparkle.position.set(
+            (Math.random() - 0.5) * 4,
+            Math.random() * 3,
+            (Math.random() - 0.5) * 4
+        );
+        scene.add(sparkle);
+        
+        // Float up and fade
+        const floatInterval = setInterval(() => {
+            sparkle.position.y += 0.1;
+            sparkle.material.opacity -= 0.05;
+            if (sparkle.material.opacity <= 0) {
+                clearInterval(floatInterval);
+                scene.remove(sparkle);
+                sparkleGeometry.dispose();
+                sparkleMaterial.dispose();
+            }
+        }, 50);
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // Zoom out
+    await cameraZoomOut(2000);
+    
+    // Fade out both characters peacefully
+    const fadeOutChar = (char) => {
+        if (!char) return;
+        let opacity = 0.5;
+        const fadeInterval = setInterval(() => {
+            opacity -= 0.05;
+            if (char.traverse) {
+                char.traverse((child) => {
+                    if (child.material) {
+                        child.material.opacity = opacity;
+                    }
+                });
+            }
+            if (opacity <= 0) {
+                clearInterval(fadeInterval);
+                scene.remove(char);
+                if (char.geometry) char.geometry.dispose();
+                if (char.material) char.material.dispose();
+            }
+        }, 50);
+    };
+    
+    fadeOutChar(visual1);
+    fadeOutChar(visual2);
+    
+    gameState.activeProjectiles = [];
+    gameState.isProcessing = false;
+    
+    console.log('Phase through effect complete');
+}
+

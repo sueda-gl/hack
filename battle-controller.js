@@ -80,79 +80,107 @@ async function handleAttackInput(concept, team) {
                 ]);
             }
             
-            // Call LLM
+            // Call LLM with new 4-outcome system
             const result = await callOpenAI(attackingConcept, defendingConcept);
             
-            // Display reasoning
-            displayReasoning(result.reasoning, 'blue');
-            displayReasoning(result.reasoning, 'red');
+            console.log('[4-Outcome System] Result:', result);
+            
+            // Extract new JSON structure
+            const { winner, outcome_type, attacker_damage, defender_damage, damage_amount, explanation, teaching_point } = result;
+            
+            // Display reasoning with outcome label
+            displayReasoningWithOutcome(explanation, outcome_type, 'blue');
+            displayReasoningWithOutcome(explanation, outcome_type, 'red');
             
             console.log('Projectiles reached center, showing collision...');
             
-            // Determine winner and damage
-            let damagedTeam, winningTeam, resultMessage;
-            const { reasoning, outcome, damage } = result;
-            
-            if (outcome === 'DEFEAT') {
-                // AI attacks, player defends -> AI wins
-                damagedTeam = defendingTeam;
-                winningTeam = attackingTeam;
-                resultMessage = `✨ ${attackingConcept} defeats ${defendingConcept}!`;
-            } else if (outcome === 'BLOCKED') {
-                // Player successfully blocks
-                damagedTeam = attackingTeam;
-                winningTeam = defendingTeam;
-                resultMessage = `🛡️ ${defendingConcept} blocks ${attackingConcept}!`;
-            } else {
-                // NEUTRAL - both take half damage
-                await createCenterCollision(attackVisual, defendVisual, 'neutral');
-                await new Promise(resolve => setTimeout(resolve, 1200));
-                
-                updateHealth('blue', damage / 2);
-                updateHealth('red', damage / 2);
-                
-                // Send impact waves to BOTH towers and wait for completion
-                console.log('Sending impact waves to both towers (neutral)...');
-                await Promise.all([
-                    sendImpactWaveToTower('blue'),
-                    sendImpactWaveToTower('red')
-                ]);
-                console.log('Both impact waves completed');
-                
-                resultMessage = `⚔️ ${attackingConcept} and ${defendingConcept} clash evenly!`;
-                
-                showMessage(resultMessage, 'blue');
-                showMessage(resultMessage, 'red');
-                
-            addToBattleHistory(attackingConcept, defendingConcept, reasoning, resultMessage, damage);
-            
-            // Wait for character fade-out animation to complete before resetting camera
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            
-            // Reset will be handled by finally block
-            // Don't call initiateAIAttack here - finally block will handle it
-            
-            return;
+            // Handle each of the 4 outcome types
+            switch(outcome_type) {
+                case 'direct_win':
+                    console.log('[DIRECT_WIN] Clean victory');
+                    // Show collision with winner
+                    const directWinner = winner === 'attacker' ? 'red' : 'blue';
+                    await createCenterCollision(attackVisual, defendVisual, directWinner);
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    
+                    // Apply damage to loser only
+                    if (attacker_damage === 1) {
+                        updateHealth('red', damage_amount);
+                        await sendImpactWaveToTower('red');
+                    }
+                    if (defender_damage === 1) {
+                        updateHealth('blue', damage_amount);
+                        await sendImpactWaveToTower('blue');
+                    }
+                    
+                    // Show messages
+                    showMessage(`✨ ${explanation}`, 'blue');
+                    showMessage(`✨ ${explanation}`, 'red');
+                    break;
+                    
+                case 'backfire_win':
+                    console.log('[BACKFIRE_WIN] Defender\'s choice backfired!');
+                    // Show backfire explosion at defender's location
+                    await createBackfireCollision(attackVisual, defendVisual);
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    
+                    // Defender takes damage from backfire
+                    if (defender_damage === 1) {
+                        updateHealth('blue', damage_amount);
+                        await sendImpactWaveToTower('blue');
+                    }
+                    
+                    // Show backfire messages
+                    showMessage(`💥 ${explanation}`, 'blue');
+                    showMessage(`💥 ${explanation}`, 'red');
+                    break;
+                    
+                case 'neutral_no_damage':
+                    console.log('[NEUTRAL_NO_DAMAGE] No meaningful interaction');
+                    // Show phase-through effect (no explosion)
+                    await createPhaseThroughEffect(attackVisual, defendVisual);
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    
+                    // No damage to either tower
+                    // Both characters fade away peacefully
+                    
+                    // Show no damage messages
+                    showMessage(`🚫 ${explanation}`, 'blue');
+                    showMessage(`🚫 ${explanation}`, 'red');
+                    break;
+                    
+                case 'mutual_destruction':
+                    console.log('[MUTUAL_DESTRUCTION] Both concepts destroyed');
+                    // Show symmetric explosion
+                    await createCenterCollision(attackVisual, defendVisual, 'neutral');
+                    await new Promise(resolve => setTimeout(resolve, 1200));
+                    
+                    // Both towers take equal damage
+                    updateHealth('blue', damage_amount);
+                    updateHealth('red', damage_amount);
+                    
+                    // Send impact waves to BOTH towers
+                    await Promise.all([
+                        sendImpactWaveToTower('blue'),
+                        sendImpactWaveToTower('red')
+                    ]);
+                    
+                    // Show mutual destruction messages
+                    showMessage(`⚔️ ${explanation}`, 'blue');
+                    showMessage(`⚔️ ${explanation}`, 'red');
+                    break;
+                    
+                default:
+                    console.error('Unknown outcome_type:', outcome_type);
+                    // Fallback to no damage
+                    await createCenterCollision(attackVisual, defendVisual, 'neutral');
+                    await new Promise(resolve => setTimeout(resolve, 1200));
+                    showMessage('⚠️ Unknown outcome', 'blue');
+                    showMessage('⚠️ Unknown outcome', 'red');
             }
             
-            // Show collision with winner
-            await createCenterCollision(attackVisual, defendVisual, winningTeam);
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            // Apply damage
-            updateHealth(damagedTeam, damage);
-            
-            // Send impact wave to tower and WAIT for it to complete
-            console.log('Sending impact wave to tower...');
-            await sendImpactWaveToTower(damagedTeam);
-            console.log('Impact wave completed');
-            
-            // Show result
-            showMessage(resultMessage, 'blue');
-            showMessage(resultMessage, 'red');
-            
-            // Add to battle history
-            addToBattleHistory(attackingConcept, defendingConcept, reasoning, resultMessage, damage);
+            // Add to battle history with new format
+            addToBattleHistory(attackingConcept, defendingConcept, explanation, outcome_type, damage_amount);
             
             // Wait for character fade-out animation to complete before resetting camera
             await new Promise(resolve => setTimeout(resolve, 2000));
