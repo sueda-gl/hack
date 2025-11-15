@@ -246,44 +246,63 @@ function getOutcomeLabel(outcome_type) {
 }
 
 // Display reasoning with outcome label (new 4-outcome system)
+// Returns a Promise that resolves when typewriter effect completes
 function displayReasoningWithOutcome(explanation, outcome_type, team) {
     // Only show once (not for both teams)
-    if (team === 'red') return;
+    if (team === 'red') return Promise.resolve();
     
     const centerBox = document.getElementById('center-reasoning');
     const textEl = document.getElementById('center-reasoning-text');
     
-    if (!centerBox || !textEl) return;
+    if (!centerBox || !textEl) return Promise.resolve();
     
-    // Clear previous text
-    textEl.textContent = '';
-    
-    // Get outcome label
-    const outcomeLabel = getOutcomeLabel(outcome_type);
-    
-    // Show the box
-    centerBox.classList.add('visible');
-    
-    // Create full text with label
-    const fullText = `${outcomeLabel}\n\n${explanation}`;
-    
-    // Typewriter effect
-    let charIndex = 0;
-    const typingSpeed = 50; // milliseconds per character
-    
-    function typeNextChar() {
-        if (charIndex < fullText.length) {
-            textEl.textContent += fullText.charAt(charIndex);
-            charIndex++;
-            setTimeout(typeNextChar, typingSpeed);
-        } else {
-            // After typing is complete, wait 5 seconds then fade out
-            setTimeout(() => {
-                centerBox.classList.remove('visible');
-            }, 5000);
+    return new Promise((resolve) => {
+        // Clear previous text
+        textEl.textContent = '';
+        
+        // Get outcome label
+        const outcomeLabel = getOutcomeLabel(outcome_type);
+        
+        // Show the box
+        centerBox.classList.add('visible');
+        
+        // Create full text with label
+        const fullText = `${outcomeLabel}\n\n${explanation}`;
+        
+        // Typewriter effect
+        let charIndex = 0;
+        const typingSpeed = 50; // milliseconds per character
+        
+        function typeNextChar() {
+            if (charIndex < fullText.length) {
+                textEl.textContent += fullText.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeNextChar, typingSpeed);
+            } else {
+                // Typewriter complete!
+                console.log('[Reasoning] Typewriter effect complete');
+                
+                // Check if in onboarding mode
+                const inOnboarding = (typeof isOnboardingActive === 'function' && isOnboardingActive());
+                
+                if (inOnboarding) {
+                    // In onboarding: Don't auto-hide, lesson banner will replace it
+                    // Resolve immediately so lesson can show
+                    console.log('[Reasoning] Onboarding mode - resolving immediately for lesson banner');
+                    resolve();
+                } else {
+                    // Normal gameplay: Wait 5 seconds then fade out
+                    console.log('[Reasoning] Normal mode - auto-hiding after 5 seconds');
+                    setTimeout(() => {
+                        centerBox.classList.remove('visible');
+                    }, 5000);
+                    // Resolve after fade starts
+                    resolve();
+                }
+            }
         }
-    }
-    
-    typeNextChar();
+        
+        typeNextChar();
+    });
 }
 

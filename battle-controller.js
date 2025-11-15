@@ -57,6 +57,9 @@ async function handleAttackInput(concept, team) {
         showMessage('🤔 Analyzing interaction...', 'blue');
         showMessage('🤔 Analyzing interaction...', 'red');
 
+        // Declare reasoningPromise outside try block so it's accessible in finally
+        let reasoningPromise = null;
+
         try {
             // Create player's visual
             const defendVisual = await createAttackVisual(defendingConcept, defendingTeam);
@@ -88,9 +91,9 @@ async function handleAttackInput(concept, team) {
             // Extract new JSON structure
             const { winner, outcome_type, attacker_damage, defender_damage, damage_amount, explanation, teaching_point } = result;
             
-            // Display reasoning with outcome label
-            displayReasoningWithOutcome(explanation, outcome_type, 'blue');
-            displayReasoningWithOutcome(explanation, outcome_type, 'red');
+            // Start reasoning display (don't await - let it run in parallel with animations)
+            reasoningPromise = displayReasoningWithOutcome(explanation, outcome_type, 'blue');
+            displayReasoningWithOutcome(explanation, outcome_type, 'red'); // Second call returns immediately (team check)
             
             console.log('Projectiles reached center, showing collision...');
             
@@ -215,12 +218,18 @@ async function handleAttackInput(concept, team) {
             // Check if onboarding is active and show lesson banner
             if (typeof isOnboardingActive === 'function' && isOnboardingActive()) {
                 const currentStep = typeof getCurrentStep === 'function' ? getCurrentStep() : 0;
-                console.log('[Onboarding] Waiting for reasoning to display, then showing lesson...');
+                console.log('[Onboarding] Waiting for reasoning typewriter to complete...');
                 
-                // Wait for reasoning to display and fade (6 seconds)
-                await new Promise(resolve => setTimeout(resolve, 6000));
+                // Wait for reasoning typewriter to finish (if it hasn't already)
+                if (reasoningPromise) {
+                    await reasoningPromise;
+                    console.log('[Onboarding] Reasoning typewriter complete');
+                }
                 
-                // Show lesson banner
+                // Small buffer to let player absorb the reasoning (0.5 seconds)
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Show lesson banner immediately after reasoning
                 if (typeof showLessonBanner === 'function') {
                     showLessonBanner(currentStep);
                 }
