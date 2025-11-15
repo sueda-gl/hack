@@ -2,27 +2,27 @@
 // Depends on: scene-setup.js (scene, towers global variables)
 
 function createArena() {
-    // Create larger arena platform
-    const platformGeometry = new THREE.BoxGeometry(50, 2, 30);
+    // Create circular arena platform
+    const platformGeometry = new THREE.CylinderGeometry(30, 30, 2, 64);
     const platformMaterial = new THREE.MeshPhongMaterial({
-        color: 0x5a6670,
-        emissive: 0x2a3035,
-        emissiveIntensity: 0.05,
-        roughness: 0.7,
-        metalness: 0.1
+        color: 0x4a4a52,
+        emissive: 0x1a1a25,
+        emissiveIntensity: 0.08,
+        roughness: 0.8,
+        metalness: 0.15
     });
     arena = new THREE.Mesh(platformGeometry, platformMaterial);
     arena.position.y = -11;
     arena.receiveShadow = true;
     scene.add(arena);
     
-    // Add grass areas on the platform
-    const grassTopGeometry = new THREE.PlaneGeometry(50, 30);
+    // Add circular grass area on the platform
+    const grassTopGeometry = new THREE.CircleGeometry(30, 64);
     const grassTopMaterial = new THREE.MeshPhongMaterial({
-        color: 0x4d7c4d,
-        emissive: 0x2d4c2d,
-        emissiveIntensity: 0.02,
-        roughness: 0.9
+        color: 0x3a5a3a,
+        emissive: 0x1a2a1a,
+        emissiveIntensity: 0.03,
+        roughness: 0.95
     });
     const grassTop = new THREE.Mesh(grassTopGeometry, grassTopMaterial);
     grassTop.rotation.x = -Math.PI / 2;
@@ -30,12 +30,12 @@ function createArena() {
     grassTop.receiveShadow = true;
     scene.add(grassTop);
     
-    // Stone pathway in the middle (longer for increased distance)
-    const pathGeometry = new THREE.BoxGeometry(12, 0.1, 30);
+    // Circular stone pathway in the middle
+    const pathGeometry = new THREE.CylinderGeometry(6, 6, 0.1, 32);
     const pathMaterial = new THREE.MeshPhongMaterial({
-        color: 0x8b8680,
-        roughness: 0.9,
-        metalness: 0.1
+        color: 0x6b6660,
+        roughness: 0.95,
+        metalness: 0.05
     });
     const path = new THREE.Mesh(pathGeometry, pathMaterial);
     path.position.set(0, -9.95, 0);
@@ -88,16 +88,16 @@ function createArena() {
         scene.add(post2);
     }
     
-    // River with clearer water
-    const waterGeometry = new THREE.PlaneGeometry(50, 30);
+    // Circular river/moat with darker water
+    const waterGeometry = new THREE.CircleGeometry(30, 64);
     const waterMaterial = new THREE.MeshPhongMaterial({
-        color: 0x006FA0,
+        color: 0x004560,
         transparent: true,
-        opacity: 0.75,
-        emissive: 0x003050,
-        emissiveIntensity: 0.1,
-        roughness: 0.2,
-        metalness: 0.9
+        opacity: 0.8,
+        emissive: 0x001520,
+        emissiveIntensity: 0.15,
+        roughness: 0.3,
+        metalness: 0.85
     });
     const water = new THREE.Mesh(waterGeometry, waterMaterial);
     water.rotation.x = -Math.PI / 2;
@@ -124,8 +124,89 @@ function createArena() {
         scene.add(lilyPad);
     }
     
+    // Add crater slopes around the arena
+    createCraterSlopes();
+    
     // Add clouds
     addClouds();
+}
+
+function createCraterSlopes() {
+    // Create outer crater wall with earth/dirt texture
+    const craterOuterGeometry = new THREE.CylinderGeometry(45, 35, 15, 64, 1, true);
+    const craterMaterial = new THREE.MeshPhongMaterial({
+        color: 0x3d2f1f,
+        emissive: 0x1a1510,
+        emissiveIntensity: 0.05,
+        roughness: 0.95,
+        metalness: 0,
+        side: THREE.DoubleSide
+    });
+    const craterWall = new THREE.Mesh(craterOuterGeometry, craterMaterial);
+    craterWall.position.y = -15;
+    craterWall.receiveShadow = true;
+    craterWall.castShadow = true;
+    scene.add(craterWall);
+    
+    // Add darker bottom rim
+    const rimGeometry = new THREE.CylinderGeometry(35, 32, 2, 64);
+    const rimMaterial = new THREE.MeshPhongMaterial({
+        color: 0x2a1f15,
+        emissive: 0x0a0505,
+        emissiveIntensity: 0.02,
+        roughness: 1.0,
+        metalness: 0
+    });
+    const rim = new THREE.Mesh(rimGeometry, rimMaterial);
+    rim.position.y = -21;
+    rim.receiveShadow = true;
+    scene.add(rim);
+    
+    // Add rocky texture details on crater walls
+    const rockDetailGeometry = new THREE.DodecahedronGeometry(0.8);
+    const rockMaterial = new THREE.MeshPhongMaterial({
+        color: 0x4a3a2a,
+        roughness: 0.95,
+        flatShading: true
+    });
+    
+    for (let i = 0; i < 30; i++) {
+        const angle = (i / 30) * Math.PI * 2;
+        const radius = 34 + Math.random() * 8;
+        const height = -18 + Math.random() * 10;
+        
+        const rock = new THREE.Mesh(rockDetailGeometry, rockMaterial);
+        rock.position.set(
+            Math.cos(angle) * radius,
+            height,
+            Math.sin(angle) * radius
+        );
+        rock.scale.set(
+            0.5 + Math.random() * 1.5,
+            0.5 + Math.random() * 1.5,
+            0.5 + Math.random() * 1.5
+        );
+        rock.rotation.set(
+            Math.random() * Math.PI,
+            Math.random() * Math.PI,
+            Math.random() * Math.PI
+        );
+        rock.castShadow = true;
+        scene.add(rock);
+    }
+    
+    // Add dirt/earth layers
+    for (let i = 0; i < 3; i++) {
+        const layerGeometry = new THREE.TorusGeometry(36 + i * 3, 0.8, 8, 32);
+        const layerMaterial = new THREE.MeshPhongMaterial({
+            color: new THREE.Color().setHSL(0.08, 0.3, 0.15 + i * 0.05),
+            roughness: 1.0
+        });
+        const layer = new THREE.Mesh(layerGeometry, layerMaterial);
+        layer.position.y = -16 + i * 2;
+        layer.rotation.x = Math.PI / 2;
+        scene.add(layer);
+    }
 }
 
 function addClouds() {
@@ -370,12 +451,12 @@ function addDecorations() {
         group.add(trunk);
         
         if (type === 'pine') {
-            // Pine tree layers
+            // Dark pine tree layers
             for (let i = 0; i < 3; i++) {
                 const coneGeometry = new THREE.ConeGeometry(1.5 - i * 0.3, 2, 8);
                 const coneMaterial = new THREE.MeshPhongMaterial({
-                    color: new THREE.Color().setHSL(0.3, 0.7, 0.3 + i * 0.05),
-                    roughness: 0.8
+                    color: new THREE.Color().setHSL(0.3, 0.4, 0.18 + i * 0.03),
+                    roughness: 0.95
                 });
                 const cone = new THREE.Mesh(coneGeometry, coneMaterial);
                 cone.position.y = 2.5 + i * 1.2;
@@ -384,11 +465,11 @@ function addDecorations() {
                 group.add(cone);
             }
         } else if (type === 'oak') {
-            // Oak tree crown
+            // Dark oak tree crown
             const crownGeometry = new THREE.SphereGeometry(2, 8, 6);
             const crownMaterial = new THREE.MeshPhongMaterial({
-                color: 0x2d5a2d,
-                roughness: 0.9
+                color: 0x1d3a1d,
+                roughness: 0.95
             });
             const crown = new THREE.Mesh(crownGeometry, crownMaterial);
             crown.position.y = 3.5;
@@ -412,13 +493,13 @@ function addDecorations() {
                 group.add(smallCrown);
             }
         } else if (type === 'willow') {
-            // Willow tree
+            // Dark willow tree
             const crownGeometry = new THREE.SphereGeometry(2.5, 8, 6);
             const crownMaterial = new THREE.MeshPhongMaterial({
-                color: 0x4d7c4d,
+                color: 0x2d4a2d,
                 transparent: true,
                 opacity: 0.9,
-                roughness: 0.9
+                roughness: 0.95
             });
             const crown = new THREE.Mesh(crownGeometry, crownMaterial);
             crown.position.y = 4;
@@ -433,12 +514,12 @@ function addDecorations() {
         return group;
     }
     
-    // Create bushes
+    // Create dark bushes
     function createBush(x, y, z) {
         const group = new THREE.Group();
         const bushMaterial = new THREE.MeshPhongMaterial({
-            color: new THREE.Color().setHSL(0.3, 0.6, 0.35),
-            roughness: 0.9
+            color: new THREE.Color().setHSL(0.3, 0.4, 0.2),
+            roughness: 0.95
         });
         
         for (let i = 0; i < 3; i++) {
@@ -463,17 +544,17 @@ function addDecorations() {
         
         // Stem
         const stemGeometry = new THREE.CylinderGeometry(0.02, 0.02, 0.5);
-        const stemMaterial = new THREE.MeshPhongMaterial({ color: 0x2d5a2d });
+        const stemMaterial = new THREE.MeshPhongMaterial({ color: 0x1d3a1d });
         const stem = new THREE.Mesh(stemGeometry, stemMaterial);
         stem.position.y = 0.25;
         group.add(stem);
         
-        // Flower petals
+        // Dark flower petals
         const petalGeometry = new THREE.CircleGeometry(0.15, 6);
         const petalMaterial = new THREE.MeshPhongMaterial({ 
             color: color,
             emissive: color,
-            emissiveIntensity: 0.2,
+            emissiveIntensity: 0.05,
             side: THREE.DoubleSide 
         });
         
@@ -488,12 +569,12 @@ function addDecorations() {
             group.add(petal);
         }
         
-        // Center
+        // Dark center
         const centerGeometry = new THREE.SphereGeometry(0.05);
         const centerMaterial = new THREE.MeshPhongMaterial({ 
-            color: 0xffff00,
-            emissive: 0xffff00,
-            emissiveIntensity: 0.3
+            color: 0x3a3a20,
+            emissive: 0x2a2a10,
+            emissiveIntensity: 0.1
         });
         const center = new THREE.Mesh(centerGeometry, centerMaterial);
         center.position.y = 0.5;
@@ -539,9 +620,9 @@ function addDecorations() {
         scene.add(bush);
     }
     
-    // Add flower patches
-    const flowerColors = [0xff69b4, 0xffa500, 0xff0000, 0xffff00, 0x9370db];
-    for (let i = 0; i < 40; i++) {
+    // Add dark flower patches (much reduced and muted colors)
+    const flowerColors = [0x6a4a5a, 0x7a5a4a, 0x5a4a6a];
+    for (let i = 0; i < 8; i++) {
         const x = (Math.random() - 0.5) * 45;
         const z = (Math.random() - 0.5) * 28;
         // Only place flowers away from the path

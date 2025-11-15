@@ -10,9 +10,10 @@ let mixer, clock;
 
 // Initialize Three.js
 function init() {
-    // Scene setup
+    // Scene setup with darker, stormy atmosphere
     scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0xBDD8E8, 20, 150);
+    scene.background = new THREE.Color(0x1a1a25);
+    scene.fog = new THREE.Fog(0x2a2a35, 30, 120);
     
     // Camera setup - FIXED POV behind player (Blue team)
     camera = new THREE.PerspectiveCamera(
@@ -65,12 +66,12 @@ function init() {
 }
 
 function setupLighting() {
-    // Ambient light with neutral/blue sky tint
-    const ambientLight = new THREE.AmbientLight(0x8090A0, 0.6);
+    // Reduced ambient light with cool, dark tone
+    const ambientLight = new THREE.AmbientLight(0x404055, 0.3);
     scene.add(ambientLight);
     
-    // Main directional light (bright sun)
-    const dirLight = new THREE.DirectionalLight(0xFFFFFF, 1.2);
+    // Dimmed main directional light for dramatic shadows
+    const dirLight = new THREE.DirectionalLight(0xc0c0d0, 0.6);
     dirLight.position.set(25, 50, 25);
     dirLight.castShadow = true;
     dirLight.shadow.camera.left = -50;
@@ -82,28 +83,32 @@ function setupLighting() {
     dirLight.shadow.bias = -0.001;
     scene.add(dirLight);
     
-    // Secondary light for softer shadows (sky light)
-    const dirLight2 = new THREE.DirectionalLight(0x87CEEB, 0.4);
+    // Subtle cool secondary light
+    const dirLight2 = new THREE.DirectionalLight(0x4a4a60, 0.2);
     dirLight2.position.set(-20, 30, -20);
     scene.add(dirLight2);
     
-    // Point lights for tower glow with increased range
-    const blueLight = new THREE.PointLight(0x4466ff, 3, 35);
+    // Enhanced dramatic tower point lights
+    const blueLight = new THREE.PointLight(0x3355ff, 5, 40);
     blueLight.position.set(-20, 10, 0);
     scene.add(blueLight);
     
-    const redLight = new THREE.PointLight(0xff6644, 3, 35);
+    const redLight = new THREE.PointLight(0xff3333, 5, 40);
     redLight.position.set(20, 10, 0);
     scene.add(redLight);
     
-    // Hemisphere light for sky/ground color
-    const hemiLight = new THREE.HemisphereLight(0x87CEEB, 0x3D5A3D, 0.7);
+    // Dark hemisphere light for stormy atmosphere
+    const hemiLight = new THREE.HemisphereLight(0x3a3a50, 0x1a1a20, 0.4);
     scene.add(hemiLight);
     
-    // Add rim lighting for better definition
-    const rimLight = new THREE.DirectionalLight(0xFFFFFF, 0.2);
-    rimLight.position.set(0, 15, -30);
+    // Subtle ominous rim lighting from below
+    const rimLight = new THREE.DirectionalLight(0x6a5a70, 0.15);
+    rimLight.position.set(0, -10, -30);
     scene.add(rimLight);
+    
+    // Store lights for lightning effects
+    scene.userData.mainLight = dirLight;
+    scene.userData.ambientLight = ambientLight;
 }
 
 // Handle window resize

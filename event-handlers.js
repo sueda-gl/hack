@@ -27,9 +27,13 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// Show splash screen and start game
-function showSplashScreen() {
+// Show splash screen and start game with lightning intro
+async function showSplashScreen() {
     const splash = document.getElementById('splash-screen');
+    
+    // Play lightning intro first
+    await playLightningIntro();
+    
     if (splash) {
         splash.style.display = 'flex';
         splash.style.opacity = '1';

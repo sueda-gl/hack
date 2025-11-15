@@ -526,6 +526,135 @@ function createImpactWave(team) {
     }); // End of Promise
 }
 
+// Create lightning bolt geometry
+function createLightningBolt(startPos, endPos) {
+    const points = [];
+    const segments = 12;
+    
+    for (let i = 0; i <= segments; i++) {
+        const t = i / segments;
+        const x = startPos.x + (endPos.x - startPos.x) * t + (Math.random() - 0.5) * 3;
+        const y = startPos.y + (endPos.y - startPos.y) * t;
+        const z = startPos.z + (endPos.z - startPos.z) * t + (Math.random() - 0.5) * 3;
+        points.push(new THREE.Vector3(x, y, z));
+    }
+    
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const material = new THREE.LineBasicMaterial({
+        color: 0xaaddff,
+        linewidth: 3,
+        transparent: true,
+        opacity: 1
+    });
+    
+    const bolt = new THREE.Line(geometry, material);
+    scene.add(bolt);
+    
+    // Add glow effect around bolt
+    const glowGeometry = new THREE.BufferGeometry().setFromPoints(points);
+    const glowMaterial = new THREE.LineBasicMaterial({
+        color: 0xffffff,
+        linewidth: 6,
+        transparent: true,
+        opacity: 0.5
+    });
+    const glow = new THREE.Line(glowGeometry, glowMaterial);
+    scene.add(glow);
+    
+    return { bolt, glow, geometry, material, glowGeometry, glowMaterial };
+}
+
+// Lightning flash intro effect
+function playLightningIntro() {
+    return new Promise((resolve) => {
+        const mainLight = scene.userData.mainLight;
+        const ambientLight = scene.userData.ambientLight;
+        
+        if (!mainLight || !ambientLight) {
+            resolve();
+            return;
+        }
+        
+        const originalMainIntensity = mainLight.intensity;
+        const originalAmbientIntensity = ambientLight.intensity;
+        
+        let flashCount = 0;
+        const maxFlashes = 3;
+        const flashes = [];
+        
+        function triggerLightning() {
+            // Create multiple lightning bolts
+            const boltCount = 2 + Math.floor(Math.random() * 2);
+            const currentBolts = [];
+            
+            for (let i = 0; i < boltCount; i++) {
+                const angle = (Math.random() * Math.PI * 2);
+                const radius = 20 + Math.random() * 15;
+                const startPos = new THREE.Vector3(
+                    Math.cos(angle) * radius,
+                    40 + Math.random() * 20,
+                    Math.sin(angle) * radius
+                );
+                const endPos = new THREE.Vector3(
+                    Math.cos(angle) * (radius * 0.8),
+                    -10,
+                    Math.sin(angle) * (radius * 0.8)
+                );
+                
+                const boltObj = createLightningBolt(startPos, endPos);
+                currentBolts.push(boltObj);
+                
+                // Create ground impact flash
+                const impactGeometry = new THREE.SphereGeometry(2, 16, 16);
+                const impactMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xaaddff,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                const impact = new THREE.Mesh(impactGeometry, impactMaterial);
+                impact.position.copy(endPos);
+                scene.add(impact);
+                currentBolts.push({ bolt: impact, material: impactMaterial, geometry: impactGeometry });
+            }
+            
+            // Intense light flash
+            mainLight.intensity = originalMainIntensity * 8;
+            ambientLight.intensity = originalAmbientIntensity * 6;
+            
+            // Quick fade
+            setTimeout(() => {
+                mainLight.intensity = originalMainIntensity * 2;
+                ambientLight.intensity = originalAmbientIntensity * 2;
+                
+                // Cleanup bolts
+                currentBolts.forEach(obj => {
+                    if (obj.bolt) scene.remove(obj.bolt);
+                    if (obj.glow) scene.remove(obj.glow);
+                    if (obj.geometry) obj.geometry.dispose();
+                    if (obj.material) obj.material.dispose();
+                    if (obj.glowGeometry) obj.glowGeometry.dispose();
+                    if (obj.glowMaterial) obj.glowMaterial.dispose();
+                });
+            }, 80);
+            
+            setTimeout(() => {
+                mainLight.intensity = originalMainIntensity;
+                ambientLight.intensity = originalAmbientIntensity;
+                
+                flashCount++;
+                if (flashCount < maxFlashes) {
+                    setTimeout(triggerLightning, 300 + Math.random() * 400);
+                } else {
+                    setTimeout(resolve, 500);
+                }
+            }, 150);
+        }
+        
+        // Start first lightning after brief delay
+        setTimeout(triggerLightning, 500);
+    });
+}
+
 // Create victory effect
 function createVictoryEffect(winner) {
     const color = winner === 'blue' ? 0x4444ff : 0xff4444;
