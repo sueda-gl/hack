@@ -237,15 +237,16 @@ function displayOnboardingBanner(title, message, buttonText, callback) {
 // Get player-facing label for outcome type
 function getOutcomeLabel(outcome_type) {
     const labels = {
-        'direct_win': '✨ DIRECT HIT',
-        'backfire_win': '💥 BACKFIRE',
+        'direct_win': '✅ VICTORY',
+        'direct_loss': '💀 DEFEATED',
+        'backfire_win': '💥 BACKFIRE',  // Just BACKFIRE - no "win" for player perspective
         'neutral_no_damage': '🚫 INEFFECTIVE',
         'mutual_destruction': '⚔️ MUTUAL DESTRUCTION'
     };
     return labels[outcome_type] || '⚔️ BATTLE';
 }
 
-// Display reasoning with outcome label (new 4-outcome system)
+// Display reasoning with outcome label (new 5-outcome system)
 // Returns a Promise that resolves when typewriter effect completes
 function displayReasoningWithOutcome(explanation, outcome_type, team) {
     // Only show once (not for both teams)

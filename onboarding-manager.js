@@ -1,7 +1,7 @@
 // Onboarding Manager
-// Handles tutorial flow with curated battles to teach 4-outcome system mechanics
+// Handles tutorial flow with curated battles to teach 5-outcome system mechanics
 
-// Curated battle sequences for onboarding - now showcasing all 4 outcome types
+// Curated battle sequences for onboarding - showcasing key outcome types (5 total available)
 const ONBOARDING_BATTLES = [
     {
         step: 1,
@@ -49,7 +49,7 @@ const ONBOARDING_BATTLES = [
         emoji: "🔊",
         hintTitle: "AI ATTACKED WITH: ECHO CHAMBER",
         hintText: "Echo chambers amplify sound infinitely in a feedback loop. What creature makes a loud, repetitive noise?\n\n💡 Try typing: DUCK\n\nLogic: Environments can become your weapon.",
-        lessonAfter: "🦆 YOU LEARNED: Environmental Amplification\n\nThe echo chamber AMPLIFIES your duck's quack infinitely! The feedback loop becomes so powerful it collapses the chamber.\n\nA weak concept becomes overwhelming in the right environment. Another DIRECT WIN!\n\n🎓 TUTORIAL COMPLETE!\n\nYou've mastered all 4 outcome types:\n✨ Direct Win | 💥 Backfire | 🚫 Ineffective Attack | ⚔️ Mutual Destruction\n\n⚔️ WELCOME TO THE REAL GAME!\n\nRemember: An LLM is leading this game in REAL-TIME. Every battle is uniquely evaluated.\n\nBE CREATIVE. There is NO LIMIT to what you can come up with. Black holes, abstract concepts, emotions, quantum physics - anything works!\n\nFigure out the mechanics. Learn from each battle. Beat the AI at its own game!"
+        lessonAfter: "🦆 YOU LEARNED: Environmental Amplification\n\nThe echo chamber AMPLIFIES your duck's quack infinitely! The feedback loop becomes so powerful it collapses the chamber.\n\nA weak concept becomes overwhelming in the right environment. Another DIRECT WIN!\n\n🎓 TUTORIAL COMPLETE!\n\nYou've mastered all 5 outcome types:\n✅ Direct Win | 💀 Direct Loss | 💥 Backfire | 🚫 Ineffective Attack | ⚔️ Mutual Destruction\n\n⚔️ WELCOME TO THE REAL GAME!\n\nRemember: An LLM is leading this game in REAL-TIME. Every battle is uniquely evaluated.\n\nBE CREATIVE. There is NO LIMIT to what you can come up with. Black holes, abstract concepts, emotions, quantum physics - anything works!\n\nFigure out the mechanics. Learn from each battle. Beat the AI at its own game!"
     }
 ];
 
@@ -107,7 +107,7 @@ function showHintBanner(step) {
 }
 
 // Show lesson banner after battle completes
-function showLessonBanner(step) {
+function showLessonBanner(step, dynamicLessonMessage = null) {
     const battle = ONBOARDING_BATTLES[step];
     if (!battle) return;
     
@@ -122,8 +122,13 @@ function showLessonBanner(step) {
     const buttonText = isLastBattle ? 'Start Real Game →' : 'Next Battle →';
     const stepIndicator = `\n\nCompleted: ${step + 1} of 6`;
     
+    // Use dynamic LLM-generated message if available, otherwise fall back to hardcoded
+    const lessonMessage = dynamicLessonMessage || battle.lessonAfter;
+    
+    console.log(`[Onboarding] Using ${dynamicLessonMessage ? 'LLM-generated' : 'fallback'} lesson message`);
+    
     displayOnboardingBanner(
-        battle.lessonAfter + stepIndicator,
+        lessonMessage + stepIndicator,
         '',
         buttonText,
         () => {

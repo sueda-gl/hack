@@ -12,7 +12,9 @@ const CONFIG = {
     EMBEDDINGS_MODEL: 'text-embedding-ada-002',
     
     // API settings
-    MAX_TOKENS: 200,
+    MAX_TOKENS: 200,  // For lesson generation (backwards compatibility)
+    TIER1_MAX_TOKENS: 1500,  // For deep chain-of-thought reasoning
+    TIER2_MAX_TOKENS: 250,   // For distilling reasoning to 25-35 words with causal logic
     TEMPERATURE: 0.7,
     MODEL: 'gpt-4o',
     OPENAI_API_URL: 'https://api.openai.com/v1/chat/completions',

@@ -57,8 +57,9 @@ async function handleAttackInput(concept, team) {
         showMessage('🤔 Analyzing interaction...', 'blue');
         showMessage('🤔 Analyzing interaction...', 'red');
 
-        // Declare reasoningPromise outside try block so it's accessible in finally
+        // Declare variables outside try block so they're accessible in finally
         let reasoningPromise = null;
+        let result = null;
 
         try {
             // Create player's visual
@@ -83,10 +84,10 @@ async function handleAttackInput(concept, team) {
                 ]);
             }
             
-            // Call LLM with new 4-outcome system
-            const result = await callOpenAI(attackingConcept, defendingConcept);
+            // Call LLM with new 5-outcome system
+            result = await callOpenAI(attackingConcept, defendingConcept);
             
-            console.log('[4-Outcome System] Result:', result);
+            console.log('[5-Outcome System] Result:', result);
             
             // Extract new JSON structure
             const { winner, outcome_type, attacker_damage, defender_damage, damage_amount, explanation, teaching_point } = result;
@@ -97,28 +98,40 @@ async function handleAttackInput(concept, team) {
             
             console.log('Projectiles reached center, showing collision...');
             
-            // Handle each of the 4 outcome types
+            // Handle each of the 5 outcome types
             switch(outcome_type) {
                 case 'direct_win':
-                    console.log('[DIRECT_WIN] Clean victory');
-                    // Show collision with winner
-                    const directWinner = winner === 'attacker' ? 'red' : 'blue';
-                    await createCenterCollision(attackVisual, defendVisual, directWinner);
+                    console.log('[DIRECT_WIN] Defender wins - clean victory!');
+                    // Show collision with defender winning
+                    await createCenterCollision(attackVisual, defendVisual, 'blue');
                     await new Promise(resolve => setTimeout(resolve, 1500));
                     
-                    // Apply damage to loser only
+                    // Apply damage to attacker's tower (RED)
                     if (attacker_damage === 1) {
                         updateHealth('red', damage_amount);
                         await sendImpactWaveToTower('red');
                     }
+                    
+                    // Show messages
+                    showMessage(`✅ ${explanation}`, 'blue');
+                    showMessage(`✅ ${explanation}`, 'red');
+                    break;
+                    
+                case 'direct_loss':
+                    console.log('[DIRECT_LOSS] Defender loses - defense failed!');
+                    // Show collision with attacker winning
+                    await createCenterCollision(attackVisual, defendVisual, 'red');
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    
+                    // Apply damage to defender's tower (BLUE)
                     if (defender_damage === 1) {
                         updateHealth('blue', damage_amount);
                         await sendImpactWaveToTower('blue');
                     }
                     
                     // Show messages
-                    showMessage(`✨ ${explanation}`, 'blue');
-                    showMessage(`✨ ${explanation}`, 'red');
+                    showMessage(`💀 ${explanation}`, 'blue');
+                    showMessage(`💀 ${explanation}`, 'red');
                     break;
                     
                 case 'backfire_win':
@@ -229,9 +242,29 @@ async function handleAttackInput(concept, team) {
                 // Small buffer to let player absorb the reasoning (0.5 seconds)
                 await new Promise(resolve => setTimeout(resolve, 500));
                 
-                // Show lesson banner immediately after reasoning
+                // Generate dynamic lesson message using LLM (with Tier 1 reasoning for context)
+                let lessonMessage = null;
+                if (typeof generateLessonMessage === 'function' && result) {
+                    console.log('[Onboarding] Generating LLM-based lesson message...');
+                    try {
+                        // Pass result.reasoning_debug (Tier 1 reasoning) for deeper context
+                        lessonMessage = await generateLessonMessage(
+                            attackingConcept, 
+                            defendingConcept, 
+                            result,
+                            result.reasoning_debug  // NEW: Pass Tier 1 reasoning
+                        );
+                        console.log('[Onboarding] Lesson message generated successfully');
+                    } catch (error) {
+                        console.error('[Onboarding] Failed to generate lesson message:', error);
+                    }
+                } else if (!result) {
+                    console.warn('[Onboarding] No battle result available, using fallback message');
+                }
+                
+                // Show lesson banner with dynamic message
                 if (typeof showLessonBanner === 'function') {
-                    showLessonBanner(currentStep);
+                    showLessonBanner(currentStep, lessonMessage);
                 }
                 
                 // Don't automatically start next attack - user will click button to continue

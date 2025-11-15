@@ -1,7 +1,7 @@
 // Battle Resolver
 // Handles battle resolution logic and damage calculation
 
-// Add entry to battle history (updated for 4-outcome system)
+// Add entry to battle history (updated for 5-outcome system)
 function addToBattleHistory(attackConcept, defendConcept, explanation, outcome_type, damage) {
     const entry = {
         timestamp: new Date().toLocaleTimeString(),
