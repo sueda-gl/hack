@@ -14,9 +14,11 @@ const CONFIG = {
     // API settings
     MAX_TOKENS: 200,
     TEMPERATURE: 0.7,
+    MODEL: 'gpt-4o',
+    OPENAI_API_URL: 'https://api.openai.com/v1/chat/completions',
     
-    // Azure uses different header format
-    USE_AZURE: true
+    // Use OpenAI instead of Azure
+    USE_AZURE: false
 };
 
 // Export for use in other files

@@ -267,6 +267,43 @@
             line-height: 1.8;
         }
 
+        /* Centered Reasoning Display */
+        .center-reasoning-display {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 30px 50px;
+            border-radius: 0;
+            color: white;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 16px;
+            line-height: 2;
+            text-align: center;
+            z-index: 1000;
+            min-width: 600px;
+            max-width: 900px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            box-shadow: 
+                0 0 0 4px rgba(255, 255, 255, 0.4),
+                0 0 0 8px rgba(0, 0, 0, 0.8),
+                6px 6px 0 0 rgba(0, 0, 0, 0.7),
+                0 0 40px rgba(255, 255, 255, 0.2);
+            text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.8);
+            image-rendering: pixelated;
+        }
+
+        .center-reasoning-display.visible {
+            opacity: 1;
+        }
+
+        #center-reasoning-text {
+            min-height: 40px;
+        }
+
         #response-timer {
             font-family: 'Press Start 2P', cursive;
             font-size: 10px;
@@ -341,7 +378,6 @@
         </div>
         <div id="blue-concept" class="concept-display"></div>
         <div id="blue-message" class="message-display"></div>
-        <div id="blue-reasoning" class="reasoning-display"></div>
     </div>
 
     <div id="red-battle-ui" class="battle-ui red-side">
@@ -351,7 +387,11 @@
         </div>
         <div id="red-concept" class="concept-display"></div>
         <div id="red-message" class="message-display"></div>
-        <div id="red-reasoning" class="reasoning-display"></div>
+    </div>
+
+    <!-- Centered Reasoning Display -->
+    <div id="center-reasoning" class="center-reasoning-display">
+        <div id="center-reasoning-text"></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

@@ -12,8 +12,8 @@ function animate() {
     if (!cameraShakeActive && !isRotating) {
         // Keep camera in fixed position (unless camera is zooming for battle)
         if (!camera.userData || !camera.userData.isZooming) {
-            camera.position.set(0.52, 31.68, 52.16);
-            camera.lookAt(0.09, 5.72, 9.43);
+            camera.position.set(-19.58, 13.37, 56.24);
+            camera.lookAt(-3.54, 2.42, 10.17);
         }
     }
     

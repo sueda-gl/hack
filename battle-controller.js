@@ -105,7 +105,7 @@ async function handleAttackInput(concept, team) {
                 resultMessage = `🛡️ ${defendingConcept} blocks ${attackingConcept}!`;
             } else {
                 // NEUTRAL - both take half damage
-                createCenterCollision(attackVisual, defendVisual, 'neutral');
+                await createCenterCollision(attackVisual, defendVisual, 'neutral');
                 await new Promise(resolve => setTimeout(resolve, 1200));
                 
                 updateHealth('blue', damage / 2);
@@ -126,6 +126,9 @@ async function handleAttackInput(concept, team) {
                 
             addToBattleHistory(attackingConcept, defendingConcept, reasoning, resultMessage, damage);
             
+            // Wait for character fade-out animation to complete before resetting camera
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
             // Reset will be handled by finally block
             // Don't call initiateAIAttack here - finally block will handle it
             
@@ -133,7 +136,7 @@ async function handleAttackInput(concept, team) {
             }
             
             // Show collision with winner
-            createCenterCollision(attackVisual, defendVisual, winningTeam);
+            await createCenterCollision(attackVisual, defendVisual, winningTeam);
             await new Promise(resolve => setTimeout(resolve, 1500));
             
             // Apply damage
@@ -150,6 +153,9 @@ async function handleAttackInput(concept, team) {
             
             // Add to battle history
             addToBattleHistory(attackingConcept, defendingConcept, reasoning, resultMessage, damage);
+            
+            // Wait for character fade-out animation to complete before resetting camera
+            await new Promise(resolve => setTimeout(resolve, 2000));
             
         } catch (error) {
             console.error('Battle error:', error);
@@ -171,13 +177,18 @@ async function handleAttackInput(concept, team) {
             // Re-enable input
             if (blueInput) blueInput.disabled = false;
             
+            // Reset camera to original position after ALL animations complete
+            if (typeof resetCamera === 'function') {
+                resetCamera();
+            }
+            
             console.log('Battle complete, state reset');
             
             // Wait for ALL animations to complete before next AI attack
-            // Total wait: collision (1.5s) + impact wave (~0.8s) + buffer (5s) = ~7.3s total
+            // Total wait: collision + impact wave + fade + buffer = ~7.3s total
             if (gameState.blueHealth > 0 && gameState.redHealth > 0) {
                 console.log('Waiting for animations to fully complete before next AI attack...');
-                await new Promise(resolve => setTimeout(resolve, 5000)); // 5 second buffer (increased from 3s)
+                await new Promise(resolve => setTimeout(resolve, 3000)); // 3 second buffer (reduced since we added 2s wait above)
                 console.log('Starting next AI attack');
                 initiateAIAttack();
             }

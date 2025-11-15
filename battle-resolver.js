@@ -87,7 +87,7 @@ async function resolveBattle(attackConcept, defendConcept, attackTeam, defendTea
         resultMessage = `🛡️ ${defendConcept} blocks ${attackConcept}!`;
     } else {
         // NEUTRAL - both take half damage
-        createCenterCollision(attackVisual, defendVisual, 'neutral');
+        await createCenterCollision(attackVisual, defendVisual, 'neutral');
         
         // Wait longer for the dramatic collision effect
         await new Promise(resolve => setTimeout(resolve, 1200));
@@ -101,12 +101,15 @@ async function resolveBattle(attackConcept, defendConcept, attackTeam, defendTea
         
         addToBattleHistory(attackConcept, defendConcept, reasoning, resultMessage, damage);
         
+        // Wait for character fade-out animation to complete
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
         console.log('Neutral battle complete');
         return;
     }
     
     // Show collision with winner
-    createCenterCollision(attackVisual, defendVisual, winningTeam);
+    await createCenterCollision(attackVisual, defendVisual, winningTeam);
     
     // Wait longer for the dramatic collision effect
     await new Promise(resolve => setTimeout(resolve, 1500));
@@ -123,5 +126,8 @@ async function resolveBattle(attackConcept, defendConcept, attackTeam, defendTea
     
     // Add to battle history
     addToBattleHistory(attackConcept, defendConcept, reasoning, resultMessage, damage);
+    
+    // Wait for character fade-out animation to complete
+    await new Promise(resolve => setTimeout(resolve, 2000));
 }
 

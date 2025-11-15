@@ -298,16 +298,24 @@ function cameraZoomToCenter(targetPos, duration) {
 function cameraZoomOut(duration) {
     return new Promise((resolve) => {
         const startPos = camera.position.clone();
-        const targetPos = new THREE.Vector3(0, 35, 45);
+        const startLookAt = new THREE.Vector3(0, 0, 0);
+        const targetPos = new THREE.Vector3(-19.58, 13.37, 56.24);
+        const targetLookAt = new THREE.Vector3(-3.54, 2.42, 10.17);
         const startTime = Date.now();
         
         function animate() {
             const elapsed = Date.now() - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            const eased = 1 - Math.pow(1 - progress, 3);
+            // Smoother easing - ease in-out cubic for very smooth motion
+            const eased = progress < 0.5 
+                ? 4 * progress * progress * progress 
+                : 1 - Math.pow(-2 * progress + 2, 3) / 2;
             
             camera.position.lerpVectors(startPos, targetPos, eased);
-            camera.lookAt(0, 0, 0);
+            
+            // Smoothly interpolate the look-at point as well
+            const currentLookAt = new THREE.Vector3().lerpVectors(startLookAt, targetLookAt, eased);
+            camera.lookAt(currentLookAt);
             
             if (progress < 1) {
                 requestAnimationFrame(animate);
@@ -531,8 +539,8 @@ async function createCenterCollision(visual1, visual2, winner) {
     // Winner pushes back loser
     const {winnerChar, loserChar} = await showWinnerAnimation(visual1, visual2, winner, 800);
     
-    // Zoom back out
-    await cameraZoomOut(800);
+    // Zoom back out - slower and smoother
+    await cameraZoomOut(2000);
     
     // Remove only the LOSER character - winner stays in arena!
     if (loserChar) {

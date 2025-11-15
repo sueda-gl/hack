@@ -23,6 +23,11 @@ function endGame(winner) {
     showMessage(message, 'blue');
     showMessage(message, 'red');
     
+    // Reset camera to original position
+    if (typeof resetCamera === 'function') {
+        resetCamera();
+    }
+    
     // Show victory animation
     createVictoryEffect(winner);
     
@@ -68,6 +73,11 @@ function resetGame() {
     const blueInput = document.getElementById('blue-input');
     if (blueInput) {
         blueInput.disabled = false;
+    }
+    
+    // Reset camera to original position
+    if (typeof resetCamera === 'function') {
+        resetCamera();
     }
     
     // Start game again with splash screen

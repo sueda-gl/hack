@@ -23,8 +23,8 @@ function init() {
         1000
     );
     // Fixed camera position - centered elevated view
-    camera.position.set(0.52, 31.68, 52.16);
-    camera.lookAt(0.09, 5.72, 9.43); // Looking at center of arena
+    camera.position.set(-19.58, 13.37, 56.24);
+    camera.lookAt(-3.54, 2.42, 10.17); // Looking at center of arena
     
     // Renderer setup
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });

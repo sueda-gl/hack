@@ -8,16 +8,22 @@ async function callOpenAI(attackingConcept, defendingConcept) {
 Attacking: "${attackingConcept}"
 Defending: "${defendingConcept}"
 
-Provide a brief (2-3 sentences) logical reasoning about which would win and why, based on real-world properties and interactions. Consider physical properties, elemental interactions, and logical relationships.
+Provide ONE SHORT SENTENCE (maximum 15 words) explaining which wins and why, based on real-world properties.
 
 Then give a verdict: Does the attack DEFEAT the defense, get BLOCKED by it, or is it NEUTRAL (both persist)?
 
 Format your response EXACTLY as:
-REASONING: [your logical explanation]
+REASONING: [one short sentence, max 15 words]
 OUTCOME: [DEFEAT/BLOCKED/NEUTRAL]
 DAMAGE: [0-40, based on effectiveness]`;
 
     try {
+        // Debug: Check if API key is loaded
+        console.log('USE_AZURE:', CONFIG.USE_AZURE);
+        console.log('API Key exists:', !!CONFIG.OPENAI_API_KEY);
+        console.log('API Key length:', CONFIG.OPENAI_API_KEY?.length);
+        console.log('API Key starts with:', CONFIG.OPENAI_API_KEY?.substring(0, 10));
+        
         // Azure OpenAI uses different header format
         const headers = {
             'Content-Type': 'application/json'
@@ -30,6 +36,7 @@ DAMAGE: [0-40, based on effectiveness]`;
         }
         
         const endpoint = CONFIG.USE_AZURE ? CONFIG.AZURE_OPENAI_ENDPOINT : CONFIG.OPENAI_API_URL;
+        console.log('Endpoint:', endpoint);
         
         const requestBody = {
             messages: [

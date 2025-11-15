@@ -139,6 +139,11 @@ async function handleTimeout() {
     gameState.aiWalkingCharacter = null;
     clearInputs();
     
+    // Reset camera to original position
+    if (typeof resetCamera === 'function') {
+        resetCamera();
+    }
+    
     // Wait a moment, then start next AI attack
     await new Promise(resolve => setTimeout(resolve, 1500));
     

@@ -21,18 +21,40 @@ function updateHealthBar(team, health) {
     updateTowerHealth(team, health);
 }
 
-// Display reasoning text on team's side
+// Display reasoning text with typewriter effect in center of screen
 function displayReasoning(reasoning, team) {
-    const reasoningEl = document.getElementById(`${team}-reasoning`);
-    if (reasoningEl) {
-        reasoningEl.textContent = reasoning;
-        reasoningEl.style.opacity = '1';
-        
-        // Fade out after 8 seconds
-        setTimeout(() => {
-            reasoningEl.style.opacity = '0';
-        }, 8000);
+    // Only show once (not for both teams)
+    if (team === 'red') return; // Skip the second call
+    
+    const centerBox = document.getElementById('center-reasoning');
+    const textEl = document.getElementById('center-reasoning-text');
+    
+    if (!centerBox || !textEl) return;
+    
+    // Clear previous text
+    textEl.textContent = '';
+    
+    // Show the box
+    centerBox.classList.add('visible');
+    
+    // Typewriter effect
+    let charIndex = 0;
+    const typingSpeed = 50; // milliseconds per character
+    
+    function typeNextChar() {
+        if (charIndex < reasoning.length) {
+            textEl.textContent += reasoning.charAt(charIndex);
+            charIndex++;
+            setTimeout(typeNextChar, typingSpeed);
+        } else {
+            // After typing is complete, wait 5 seconds then fade out
+            setTimeout(() => {
+                centerBox.classList.remove('visible');
+            }, 5000);
+        }
     }
+    
+    typeNextChar();
 }
 
 // Display current concept on team's side
