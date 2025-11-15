@@ -1,0 +1,13 @@
+# API Keys and sensitive configuration
+config.local.js
+
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+.env.local
+
+# OS files
+.DS_Store
+

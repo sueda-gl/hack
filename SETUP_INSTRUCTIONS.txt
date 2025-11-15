@@ -1,0 +1,33 @@
+QUICK SETUP - COPY MODELS TO BATTLE FOLDER
+
+You need to move the GLB files from your "Poly.Pizza Models" folder into a "models" subfolder inside the battle folder.
+
+MANUAL METHOD (EASIEST):
+
+1. In Finder, navigate to your project folders
+2. Inside the "battle" folder, create a new folder called "models"
+3. From "Poly.Pizza Models.undefined-glb" folder, select all 16 GLB files
+4. Copy and paste them into "battle/models/"
+
+TERMINAL METHOD:
+
+Open Terminal and run these commands:
+
+cd /Users/suedagul/battle
+mkdir -p models
+cp "/Users/suedagul/Poly.Pizza Models.undefined-glb/"*.glb models/
+
+VERIFY IT WORKED:
+
+Run: ls /Users/suedagul/battle/models/
+You should see 16 files listed.
+
+Then reload your browser at http://localhost:8000 and test!
+
+TEST EXAMPLES:
+- "tyrant lizard" → T-Rex
+- "pack hunter" → Wolf
+- "loyal companion" → German Shepard
+- "ancient reptile" → Velociraptor
+- "marketplace" → Market Stalls
+
