@@ -14,6 +14,11 @@ function addToBattleHistory(attackConcept, defendConcept, reasoning, result, dam
     
     gameState.battleHistory.push(entry);
     
+    // Increment battle count
+    if (gameState.battleCount !== undefined) {
+        gameState.battleCount++;
+    }
+    
     // Update battle log UI
     updateBattleLog(entry);
 }

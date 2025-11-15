@@ -184,13 +184,28 @@ async function handleAttackInput(concept, team) {
             
             console.log('Battle complete, state reset');
             
-            // Wait for ALL animations to complete before next AI attack
-            // Total wait: collision + impact wave + fade + buffer = ~7.3s total
-            if (gameState.blueHealth > 0 && gameState.redHealth > 0) {
-                console.log('Waiting for animations to fully complete before next AI attack...');
-                await new Promise(resolve => setTimeout(resolve, 3000)); // 3 second buffer (reduced since we added 2s wait above)
-                console.log('Starting next AI attack');
-                initiateAIAttack();
+            // Check if onboarding is active and show lesson banner
+            if (typeof isOnboardingActive === 'function' && isOnboardingActive()) {
+                const currentStep = typeof getCurrentStep === 'function' ? getCurrentStep() : 0;
+                console.log('[Onboarding] Waiting for reasoning to display, then showing lesson...');
+                
+                // Wait for reasoning to display and fade (6 seconds)
+                await new Promise(resolve => setTimeout(resolve, 6000));
+                
+                // Show lesson banner
+                if (typeof showLessonBanner === 'function') {
+                    showLessonBanner(currentStep);
+                }
+                
+                // Don't automatically start next attack - user will click button to continue
+            } else {
+                // Normal gameplay - wait for animations then start next AI attack
+                if (gameState.blueHealth > 0 && gameState.redHealth > 0) {
+                    console.log('Waiting for animations to fully complete before next AI attack...');
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+                    console.log('Starting next AI attack');
+                    initiateAIAttack();
+                }
             }
         }
     } else {

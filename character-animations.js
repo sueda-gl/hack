@@ -155,10 +155,14 @@ function animate() {
         }
     }
     
-    // Animate AI walking character (before battle)
+    // Animate AI walking character (before battle) - skip if game is paused
     if (gameState && gameState.aiWalkingCharacter && gameState.aiWalkingCharacter.userData.walkData) {
         const walkData = gameState.aiWalkingCharacter.userData.walkData;
-        if (walkData.isWalking) {
+        
+        // Check if game is paused (onboarding mode)
+        const isPaused = (typeof isGamePaused === 'function' && isGamePaused());
+        
+        if (walkData.isWalking && !isPaused) {
             const elapsed = Date.now() - walkData.startTime;
             const progress = Math.min(elapsed / walkData.duration, 1);
             
@@ -183,11 +187,26 @@ function animate() {
                 gameState.aiWalkingCharacter.position.copy(walkData.endPos);
                 console.log('AI character reached center');
             }
+        } else if (isPaused && walkData.isWalking) {
+            // Game is paused - store elapsed time to resume from this point
+            if (!walkData.pausedAt) {
+                walkData.pausedAt = Date.now();
+                walkData.elapsedBeforePause = Date.now() - walkData.startTime;
+                console.log('AI walk paused at', walkData.elapsedBeforePause, 'ms');
+            }
+        } else if (!isPaused && walkData.pausedAt) {
+            // Game resumed - adjust start time to account for pause duration
+            const pauseDuration = Date.now() - walkData.pausedAt;
+            walkData.startTime += pauseDuration;
+            walkData.pausedAt = null;
+            console.log('AI walk resumed, added', pauseDuration, 'ms to start time');
         }
     }
     
-    // Animate active projectiles
-    if (gameState && gameState.activeProjectiles && gameState.activeProjectiles.length > 0) {
+    // Animate active projectiles - skip if game is paused
+    const isPausedForProjectiles = (typeof isGamePaused === 'function' && isGamePaused());
+    
+    if (gameState && gameState.activeProjectiles && gameState.activeProjectiles.length > 0 && !isPausedForProjectiles) {
         for (let i = gameState.activeProjectiles.length - 1; i >= 0; i--) {
             const projectile = gameState.activeProjectiles[i];
             

@@ -13,6 +13,21 @@ function selectRandomConcept() {
     return MATERIALS_DATABASE[randomIndex].name;
 }
 
+// Get concept for current onboarding step or random if not in tutorial
+function getAIConcept() {
+    // Check if onboarding is active
+    if (typeof isOnboardingActive === 'function' && isOnboardingActive()) {
+        const battle = getCurrentBattle();
+        if (battle) {
+            console.log(`[Onboarding] AI using predetermined concept: ${battle.aiConcept}`);
+            return battle.aiConcept;
+        }
+    }
+    
+    // Normal gameplay - random concept
+    return selectRandomConcept();
+}
+
 // Start AI attack sequence
 async function initiateAIAttack() {
     if (gameState.isProcessing || gameState.aiAttacking) {
@@ -23,8 +38,8 @@ async function initiateAIAttack() {
     console.log('AI initiating attack...');
     gameState.aiAttacking = true;
     
-    // Select AI concept
-    const aiConcept = selectRandomConcept();
+    // Select AI concept (onboarding or random)
+    const aiConcept = getAIConcept();
     console.log(`AI selected: ${aiConcept}`);
     
     // Show AI thinking
@@ -35,6 +50,19 @@ async function initiateAIAttack() {
     
     // Start AI walk sequence
     await startAIWalkSequence(aiConcept, 'red');
+    
+    // If onboarding is active, pause and show hint banner
+    if (typeof isOnboardingActive === 'function' && isOnboardingActive()) {
+        const currentStep = typeof getCurrentStep === 'function' ? getCurrentStep() : 0;
+        console.log(`[Onboarding] Showing hint banner for step ${currentStep + 1}`);
+        
+        // Small delay to let AI character appear, then pause
+        setTimeout(() => {
+            if (typeof showHintBanner === 'function') {
+                showHintBanner(currentStep);
+            }
+        }, 800);
+    }
 }
 
 // Start AI walking sequence (4 seconds)
@@ -68,8 +96,14 @@ async function startAIWalkSequence(concept, team) {
 
 // Start countdown timer for player response
 function startResponseTimer(duration) {
-    console.log('Starting player response timer:', duration, 'ms');
-    gameState.responseTimeRemaining = duration;
+    // Use longer duration for onboarding
+    const actualDuration = (typeof isOnboardingActive === 'function' && isOnboardingActive()) 
+        ? 20000  // 20 seconds for tutorial
+        : duration;
+    
+    console.log('Starting player response timer:', actualDuration, 'ms', 
+                isOnboardingActive && isOnboardingActive() ? '(Tutorial mode)' : '');
+    gameState.responseTimeRemaining = actualDuration;
     
     // Clear any existing timer
     if (gameState.playerResponseTimer) {
@@ -77,7 +111,7 @@ function startResponseTimer(duration) {
     }
     
     // Update timer display
-    updateTimerDisplay(duration);
+    updateTimerDisplay(actualDuration);
     
     // Show timer UI
     const timerEl = document.getElementById('response-timer');
@@ -89,7 +123,7 @@ function startResponseTimer(duration) {
     const startTime = Date.now();
     gameState.playerResponseTimer = setInterval(() => {
         const elapsed = Date.now() - startTime;
-        const remaining = Math.max(0, duration - elapsed);
+        const remaining = Math.max(0, actualDuration - elapsed);
         gameState.responseTimeRemaining = remaining;
         
         updateTimerDisplay(remaining);

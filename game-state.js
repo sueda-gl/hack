@@ -12,6 +12,7 @@ const gameState = {
     aiAttacking: false,
     playerResponseTimer: null,
     responseTimeRemaining: 0,
-    aiWalkingCharacter: null
+    aiWalkingCharacter: null,
+    battleCount: 0  // Track total battles for onboarding detection
 };
 

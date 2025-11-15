@@ -178,3 +178,59 @@ function showAIThinking(team) {
     }
 }
 
+// Display onboarding banner with interactive button
+function displayOnboardingBanner(title, message, buttonText, callback) {
+    const centerBox = document.getElementById('center-reasoning');
+    const textEl = document.getElementById('center-reasoning-text');
+    
+    if (!centerBox || !textEl) return;
+    
+    // Clear previous content
+    textEl.innerHTML = '';
+    
+    // Create title and message
+    const titleEl = document.createElement('div');
+    titleEl.style.fontSize = '14px';
+    titleEl.style.marginBottom = '20px';
+    titleEl.style.lineHeight = '1.8';
+    titleEl.textContent = title;
+    textEl.appendChild(titleEl);
+    
+    if (message) {
+        const messageEl = document.createElement('div');
+        messageEl.style.fontSize = '11px';
+        messageEl.style.marginBottom = '25px';
+        messageEl.style.lineHeight = '1.8';
+        messageEl.style.whiteSpace = 'pre-wrap';
+        messageEl.textContent = message;
+        textEl.appendChild(messageEl);
+    }
+    
+    // Create button
+    const button = document.createElement('button');
+    button.textContent = buttonText;
+    button.className = 'attack-button blue-button';
+    button.style.marginTop = '15px';
+    button.style.cursor = 'pointer';
+    button.style.pointerEvents = 'all';
+    
+    button.onclick = () => {
+        // Hide banner
+        centerBox.classList.remove('visible');
+        centerBox.style.pointerEvents = 'none';
+        
+        // Call callback
+        if (callback) {
+            setTimeout(callback, 300);
+        }
+    };
+    
+    textEl.appendChild(button);
+    
+    // Enable pointer events for button interaction
+    centerBox.style.pointerEvents = 'all';
+    
+    // Show the box
+    centerBox.classList.add('visible');
+}
+
