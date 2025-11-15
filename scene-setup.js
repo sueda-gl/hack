@@ -10,10 +10,10 @@ let mixer, clock;
 
 // Initialize Three.js
 function init() {
-    // Scene setup with darker, stormy atmosphere
+    // Scene setup with very dark, ominous atmosphere
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x1a1a25);
-    scene.fog = new THREE.Fog(0x2a2a35, 30, 120);
+    scene.background = new THREE.Color(0x0a0a15);
+    scene.fog = new THREE.Fog(0x151520, 30, 100);
     
     // Camera setup - FIXED POV behind player (Blue team)
     camera = new THREE.PerspectiveCamera(
@@ -66,13 +66,13 @@ function init() {
 }
 
 function setupLighting() {
-    // Reduced ambient light with cool, dark tone
-    const ambientLight = new THREE.AmbientLight(0x404055, 0.3);
+    // Very low ambient light for dramatic war arena
+    const ambientLight = new THREE.AmbientLight(0x302030, 0.2);
     scene.add(ambientLight);
     
-    // Dimmed main directional light for dramatic shadows
-    const dirLight = new THREE.DirectionalLight(0xc0c0d0, 0.6);
-    dirLight.position.set(25, 50, 25);
+    // Strong dramatic directional light from above (like harsh sun)
+    const dirLight = new THREE.DirectionalLight(0xb0a090, 0.8);
+    dirLight.position.set(30, 60, 20);
     dirLight.castShadow = true;
     dirLight.shadow.camera.left = -50;
     dirLight.shadow.camera.right = 50;
@@ -83,28 +83,46 @@ function setupLighting() {
     dirLight.shadow.bias = -0.001;
     scene.add(dirLight);
     
-    // Subtle cool secondary light
-    const dirLight2 = new THREE.DirectionalLight(0x4a4a60, 0.2);
-    dirLight2.position.set(-20, 30, -20);
+    // Rim light from opposite side for depth
+    const dirLight2 = new THREE.DirectionalLight(0x4a3a50, 0.3);
+    dirLight2.position.set(-25, 20, -30);
     scene.add(dirLight2);
     
-    // Enhanced dramatic tower point lights
-    const blueLight = new THREE.PointLight(0x3355ff, 5, 40);
-    blueLight.position.set(-20, 10, 0);
+    // Intense dramatic tower point lights
+    const blueLight = new THREE.PointLight(0x2244ff, 8, 50);
+    blueLight.position.set(-20, 12, 0);
+    blueLight.castShadow = true;
     scene.add(blueLight);
     
-    const redLight = new THREE.PointLight(0xff3333, 5, 40);
-    redLight.position.set(20, 10, 0);
+    const redLight = new THREE.PointLight(0xff2222, 8, 50);
+    redLight.position.set(20, 12, 0);
+    redLight.castShadow = true;
     scene.add(redLight);
     
-    // Dark hemisphere light for stormy atmosphere
-    const hemiLight = new THREE.HemisphereLight(0x3a3a50, 0x1a1a20, 0.4);
+    // Add upward spotlights at towers for dramatic effect
+    const blueSpotlight = new THREE.SpotLight(0x3355ff, 4, 40, Math.PI / 6, 0.5, 1);
+    blueSpotlight.position.set(-20, -8, 0);
+    blueSpotlight.target.position.set(-20, 20, 0);
+    scene.add(blueSpotlight);
+    scene.add(blueSpotlight.target);
+    
+    const redSpotlight = new THREE.SpotLight(0xff3333, 4, 40, Math.PI / 6, 0.5, 1);
+    redSpotlight.position.set(20, -8, 0);
+    redSpotlight.target.position.set(20, 20, 0);
+    scene.add(redSpotlight);
+    scene.add(redSpotlight.target);
+    
+    // Very dark hemisphere for ominous ground lighting
+    const hemiLight = new THREE.HemisphereLight(0x2a2a35, 0x0a0a10, 0.3);
     scene.add(hemiLight);
     
-    // Subtle ominous rim lighting from below
-    const rimLight = new THREE.DirectionalLight(0x6a5a70, 0.15);
-    rimLight.position.set(0, -10, -30);
-    scene.add(rimLight);
+    // Center arena spotlight for battle focus
+    const centerLight = new THREE.SpotLight(0xffffff, 2, 30, Math.PI / 4, 0.3, 1.5);
+    centerLight.position.set(0, 20, 0);
+    centerLight.target.position.set(0, -10, 0);
+    centerLight.castShadow = true;
+    scene.add(centerLight);
+    scene.add(centerLight.target);
     
     // Store lights for lightning effects
     scene.userData.mainLight = dirLight;

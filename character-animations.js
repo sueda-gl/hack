@@ -30,6 +30,35 @@ function animate() {
         });
     }
     
+    // Animate snow
+    if (scene.userData.snow) {
+        const snow = scene.userData.snow;
+        const positions = snow.geometry.attributes.position.array;
+        const velocities = snow.userData.velocities;
+        
+        for (let i = 0; i < positions.length; i += 3) {
+            // Update positions
+            positions[i] += velocities[i];     // x
+            positions[i + 1] += velocities[i + 1]; // y
+            positions[i + 2] += velocities[i + 2]; // z
+            
+            // Reset snow that falls below ground
+            if (positions[i + 1] < -10) {
+                positions[i + 1] = 60;
+                positions[i] = (Math.random() - 0.5) * 100;
+                positions[i + 2] = (Math.random() - 0.5) * 100;
+            }
+            
+            // Wrap snow horizontally for infinite effect
+            if (positions[i] > 50) positions[i] = -50;
+            if (positions[i] < -50) positions[i] = 50;
+            if (positions[i + 2] > 50) positions[i + 2] = -50;
+            if (positions[i + 2] < -50) positions[i + 2] = 50;
+        }
+        
+        snow.geometry.attributes.position.needsUpdate = true;
+    }
+    
     // Animate water
     scene.traverse((child) => {
         if (child.userData && child.userData.material) {

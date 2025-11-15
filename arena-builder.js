@@ -16,26 +16,26 @@ function createArena() {
     arena.receiveShadow = true;
     scene.add(arena);
     
-    // Add circular grass area on the platform
-    const grassTopGeometry = new THREE.CircleGeometry(30, 64);
-    const grassTopMaterial = new THREE.MeshPhongMaterial({
-        color: 0x3a5a3a,
-        emissive: 0x1a2a1a,
-        emissiveIntensity: 0.03,
-        roughness: 0.95
+    // Add dark earthy ground on the platform
+    const groundGeometry = new THREE.CircleGeometry(30, 64);
+    const groundMaterial = new THREE.MeshPhongMaterial({
+        color: 0x2a1f15,
+        emissive: 0x0a0505,
+        emissiveIntensity: 0.02,
+        roughness: 0.98
     });
-    const grassTop = new THREE.Mesh(grassTopGeometry, grassTopMaterial);
-    grassTop.rotation.x = -Math.PI / 2;
-    grassTop.position.y = -9.99;
-    grassTop.receiveShadow = true;
-    scene.add(grassTop);
+    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -9.99;
+    ground.receiveShadow = true;
+    scene.add(ground);
     
-    // Circular stone pathway in the middle
+    // Dark battle ground in the middle
     const pathGeometry = new THREE.CylinderGeometry(6, 6, 0.1, 32);
     const pathMaterial = new THREE.MeshPhongMaterial({
-        color: 0x6b6660,
-        roughness: 0.95,
-        metalness: 0.05
+        color: 0x1a1510,
+        roughness: 0.98,
+        metalness: 0.02
     });
     const path = new THREE.Mesh(pathGeometry, pathMaterial);
     path.position.set(0, -9.95, 0);
@@ -105,27 +105,31 @@ function createArena() {
     water.userData = { material: waterMaterial };
     scene.add(water);
     
-    // Add lily pads
-    const lilyPadGeometry = new THREE.CircleGeometry(0.5, 6);
-    const lilyPadMaterial = new THREE.MeshPhongMaterial({
-        color: 0x2d5a2d,
-        side: THREE.DoubleSide
+    // Add dark debris in water
+    const debrisGeometry = new THREE.CircleGeometry(0.4, 5);
+    const debrisMaterial = new THREE.MeshPhongMaterial({
+        color: 0x1a1510,
+        side: THREE.DoubleSide,
+        roughness: 1.0
     });
     
-    for (let i = 0; i < 8; i++) {
-        const lilyPad = new THREE.Mesh(lilyPadGeometry, lilyPadMaterial);
-        lilyPad.rotation.x = -Math.PI / 2;
-        lilyPad.position.set(
+    for (let i = 0; i < 6; i++) {
+        const debris = new THREE.Mesh(debrisGeometry, debrisMaterial);
+        debris.rotation.x = -Math.PI / 2;
+        debris.position.set(
             (Math.random() - 0.5) * 30,
             -12.4,
             (Math.random() - 0.5) * 20
         );
-        lilyPad.rotation.z = Math.random() * Math.PI;
-        scene.add(lilyPad);
+        debris.rotation.z = Math.random() * Math.PI;
+        scene.add(debris);
     }
     
     // Add crater slopes around the arena
     createCraterSlopes();
+    
+    // Add snow effect
+    createSnowEffect();
     
     // Add clouds
     addClouds();
@@ -209,16 +213,75 @@ function createCraterSlopes() {
     }
 }
 
+function createSnowEffect() {
+    const snowCount = 1500;
+    const snowGeometry = new THREE.BufferGeometry();
+    const snowPositions = [];
+    const snowVelocities = [];
+    
+    // Create snow particles
+    for (let i = 0; i < snowCount; i++) {
+        const x = (Math.random() - 0.5) * 100;
+        const y = Math.random() * 60;
+        const z = (Math.random() - 0.5) * 100;
+        
+        snowPositions.push(x, y, z);
+        snowVelocities.push(
+            (Math.random() - 0.5) * 0.003, // x velocity (very gentle drift)
+            -0.005 - Math.random() * 0.005,  // y velocity (very slow falling)
+            (Math.random() - 0.5) * 0.003   // z velocity (very gentle drift)
+        );
+    }
+    
+    snowGeometry.setAttribute('position', new THREE.Float32BufferAttribute(snowPositions, 3));
+    
+    const snowMaterial = new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 0.3,
+        transparent: true,
+        opacity: 0.8,
+        map: createSnowflakeTexture(),
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+    });
+    
+    const snow = new THREE.Points(snowGeometry, snowMaterial);
+    snow.userData = { velocities: snowVelocities };
+    scene.add(snow);
+    
+    // Store snow for animation
+    scene.userData.snow = snow;
+}
+
+function createSnowflakeTexture() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 32;
+    canvas.height = 32;
+    const ctx = canvas.getContext('2d');
+    
+    const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+    gradient.addColorStop(0, 'rgba(255,255,255,1)');
+    gradient.addColorStop(0.5, 'rgba(255,255,255,0.5)');
+    gradient.addColorStop(1, 'rgba(255,255,255,0)');
+    
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 32, 32);
+    
+    const texture = new THREE.Texture(canvas);
+    texture.needsUpdate = true;
+    return texture;
+}
+
 function addClouds() {
-    // Create realistic clouds
+    // Create dark storm clouds
     function createCloud(x, y, z) {
         const cloud = new THREE.Group();
         const cloudMaterial = new THREE.MeshPhongMaterial({
-            color: 0xFFFFFF,
+            color: 0x404050,
             transparent: true,
-            opacity: 0.9,
-            emissive: 0xFFFFFF,
-            emissiveIntensity: 0.1
+            opacity: 0.6,
+            emissive: 0x202030,
+            emissiveIntensity: 0.05
         });
         
         // Create cloud with multiple spheres
@@ -435,81 +498,65 @@ function createTowers() {
 }
 
 function addDecorations() {
-    // Create different tree types
-    function createTree(x, y, z, type = 'pine') {
+    // Create stone pillars and monoliths
+    function createStonePillar(x, y, z, type = 'tall') {
         const group = new THREE.Group();
         
-        // Tree trunk
-        const trunkGeometry = new THREE.CylinderGeometry(0.3, 0.5, 2);
-        const trunkMaterial = new THREE.MeshPhongMaterial({
-            color: 0x4a3c28,
-            roughness: 0.9
+        const stoneMaterial = new THREE.MeshPhongMaterial({
+            color: 0x3a3a3a,
+            emissive: 0x0a0a0a,
+            emissiveIntensity: 0.02,
+            roughness: 0.95,
+            flatShading: true
         });
-        const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
-        trunk.position.y = 1;
-        trunk.castShadow = true;
-        group.add(trunk);
         
-        if (type === 'pine') {
-            // Dark pine tree layers
-            for (let i = 0; i < 3; i++) {
-                const coneGeometry = new THREE.ConeGeometry(1.5 - i * 0.3, 2, 8);
-                const coneMaterial = new THREE.MeshPhongMaterial({
-                    color: new THREE.Color().setHSL(0.3, 0.4, 0.18 + i * 0.03),
-                    roughness: 0.95
-                });
-                const cone = new THREE.Mesh(coneGeometry, coneMaterial);
-                cone.position.y = 2.5 + i * 1.2;
-                cone.castShadow = true;
-                cone.receiveShadow = true;
-                group.add(cone);
-            }
-        } else if (type === 'oak') {
-            // Dark oak tree crown
-            const crownGeometry = new THREE.SphereGeometry(2, 8, 6);
-            const crownMaterial = new THREE.MeshPhongMaterial({
-                color: 0x1d3a1d,
-                roughness: 0.95
-            });
-            const crown = new THREE.Mesh(crownGeometry, crownMaterial);
-            crown.position.y = 3.5;
-            crown.scale.y = 0.8;
-            crown.castShadow = true;
-            crown.receiveShadow = true;
-            group.add(crown);
+        if (type === 'tall') {
+            // Tall stone pillar
+            const pillarGeometry = new THREE.CylinderGeometry(0.4, 0.5, 4 + Math.random() * 2, 6);
+            const pillar = new THREE.Mesh(pillarGeometry, stoneMaterial);
+            pillar.position.y = 2;
+            pillar.castShadow = true;
+            pillar.receiveShadow = true;
+            group.add(pillar);
             
-            // Add variation with smaller spheres
+            // Top piece
+            const topGeometry = new THREE.ConeGeometry(0.5, 0.6, 6);
+            const top = new THREE.Mesh(topGeometry, stoneMaterial);
+            top.position.y = 4 + Math.random();
+            top.castShadow = true;
+            group.add(top);
+        } else if (type === 'wide') {
+            // Wide stone formation
+            const baseGeometry = new THREE.CylinderGeometry(1, 1.2, 2.5, 8);
+            const base = new THREE.Mesh(baseGeometry, stoneMaterial);
+            base.position.y = 1.25;
+            base.castShadow = true;
+            base.receiveShadow = true;
+            group.add(base);
+            
+            // Add jagged top
             for (let i = 0; i < 3; i++) {
-                const smallCrown = new THREE.Mesh(
-                    new THREE.SphereGeometry(0.8, 6, 5),
-                    crownMaterial
+                const rockGeometry = new THREE.DodecahedronGeometry(0.3 + Math.random() * 0.2);
+                const rock = new THREE.Mesh(rockGeometry, stoneMaterial);
+                rock.position.set(
+                    (Math.random() - 0.5) * 0.6,
+                    2.5 + Math.random() * 0.4,
+                    (Math.random() - 0.5) * 0.6
                 );
-                smallCrown.position.set(
-                    Math.cos(i * 2.1) * 1.5,
-                    3.5 + Math.sin(i * 1.5) * 0.5,
-                    Math.sin(i * 2.1) * 1.5
-                );
-                smallCrown.castShadow = true;
-                group.add(smallCrown);
+                rock.castShadow = true;
+                group.add(rock);
             }
-        } else if (type === 'willow') {
-            // Dark willow tree
-            const crownGeometry = new THREE.SphereGeometry(2.5, 8, 6);
-            const crownMaterial = new THREE.MeshPhongMaterial({
-                color: 0x2d4a2d,
-                transparent: true,
-                opacity: 0.9,
-                roughness: 0.95
-            });
-            const crown = new THREE.Mesh(crownGeometry, crownMaterial);
-            crown.position.y = 4;
-            crown.scale.y = 1.2;
-            crown.castShadow = true;
-            group.add(crown);
+        } else if (type === 'broken') {
+            // Broken pillar
+            const brokenGeometry = new THREE.CylinderGeometry(0.5, 0.6, 1.5, 6);
+            const broken = new THREE.Mesh(brokenGeometry, stoneMaterial);
+            broken.position.y = 0.75;
+            broken.rotation.z = 0.2;
+            broken.castShadow = true;
+            group.add(broken);
         }
         
         group.position.set(x, y, z);
-        group.scale.set(0.8 + Math.random() * 0.4, 0.9 + Math.random() * 0.2, 0.8 + Math.random() * 0.4);
         group.rotation.y = Math.random() * Math.PI * 2;
         return group;
     }
@@ -585,55 +632,28 @@ function addDecorations() {
         return group;
     }
     
-    // Add multiple tree types around the expanded arena
-    const treePositions = [
+    // Add stone pillars around the arena
+    const pillarPositions = [
         // Behind blue towers
-        [-25, -10, 10, 'pine'], [-25, -10, -10, 'pine'], [-27, -10, 0, 'oak'],
-        [-23, -10, 13, 'willow'], [-23, -10, -13, 'willow'],
+        [-25, -10, 10, 'tall'], [-25, -10, -10, 'tall'], [-27, -10, 0, 'wide'],
+        [-23, -10, 13, 'broken'], [-23, -10, -13, 'tall'],
         // Behind red towers  
-        [25, -10, 10, 'pine'], [25, -10, -10, 'pine'], [27, -10, 0, 'oak'],
-        [23, -10, 13, 'willow'], [23, -10, -13, 'willow'],
+        [25, -10, 10, 'tall'], [25, -10, -10, 'tall'], [27, -10, 0, 'wide'],
+        [23, -10, 13, 'broken'], [23, -10, -13, 'tall'],
         // Sides
-        [-15, -10, 15, 'oak'], [15, -10, 15, 'oak'],
-        [-15, -10, -15, 'oak'], [15, -10, -15, 'oak'],
-        // Scattered pines
-        [-18, -10, 14, 'pine'], [18, -10, 14, 'pine'],
-        [-18, -10, -14, 'pine'], [18, -10, -14, 'pine'],
-        [-10, -10, 13, 'pine'], [10, -10, 13, 'pine'],
-        [-10, -10, -13, 'pine'], [10, -10, -13, 'pine']
+        [-15, -10, 15, 'wide'], [15, -10, 15, 'wide'],
+        [-15, -10, -15, 'wide'], [15, -10, -15, 'wide'],
+        // Scattered pillars
+        [-18, -10, 14, 'tall'], [18, -10, 14, 'tall'],
+        [-18, -10, -14, 'broken'], [18, -10, -14, 'broken'],
+        [-10, -10, 13, 'tall'], [10, -10, 13, 'tall'],
+        [-10, -10, -13, 'tall'], [10, -10, -13, 'tall']
     ];
     
-    treePositions.forEach(pos => {
-        const tree = createTree(pos[0], pos[1], pos[2], pos[3]);
-        scene.add(tree);
+    pillarPositions.forEach(pos => {
+        const pillar = createStonePillar(pos[0], pos[1], pos[2], pos[3]);
+        scene.add(pillar);
     });
-    
-    // Add bushes
-    for (let i = 0; i < 25; i++) {
-        const angle = (i / 25) * Math.PI * 2;
-        const radius = 20 + Math.random() * 5;
-        const bush = createBush(
-            Math.cos(angle) * radius,
-            -10,
-            Math.sin(angle) * radius
-        );
-        scene.add(bush);
-    }
-    
-    // Add dark flower patches (much reduced and muted colors)
-    const flowerColors = [0x6a4a5a, 0x7a5a4a, 0x5a4a6a];
-    for (let i = 0; i < 8; i++) {
-        const x = (Math.random() - 0.5) * 45;
-        const z = (Math.random() - 0.5) * 28;
-        // Only place flowers away from the path
-        if (Math.abs(x) > 7 || Math.abs(z) > 10) {
-            const flower = createFlower(
-                x, -10, z,
-                flowerColors[Math.floor(Math.random() * flowerColors.length)]
-            );
-            scene.add(flower);
-        }
-    }
     
     // Add rocks
     const rockGeometry = new THREE.DodecahedronGeometry(0.5);
