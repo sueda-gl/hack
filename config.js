@@ -13,7 +13,7 @@ const CONFIG = {
     
     // API settings
     MAX_TOKENS: 200,  // For lesson generation (backwards compatibility)
-    TIER1_MAX_TOKENS: 1500,  // For deep chain-of-thought reasoning
+    TIER1_MAX_TOKENS: 750,   // For chain-of-thought reasoning (balanced speed vs quality)
     TIER2_MAX_TOKENS: 250,   // For distilling reasoning to 25-35 words with causal logic
     TEMPERATURE: 0.7,
     MODEL: 'gpt-4o',

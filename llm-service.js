@@ -137,9 +137,9 @@ THINK STEP BY STEP before deciding:
 - Defender's concept simply FAILS to stop the attack
 - Attacker takes 0 damage, defender takes full damage
 - Defense is ineffective and attack reaches defender's tower
-- Example: Fire vs Tree → Tree burns, can't stop fire (PLAYER's BLUE tower damaged)
-- Example: Lava vs Rock → Rock melts, can't resist heat (PLAYER's BLUE tower damaged)
-- Example: Sword vs Paper → Paper is cut through (PLAYER's BLUE tower damaged)
+- Example: Fire vs Tree → Tree burns, can't stop fire (your tower damaged)
+- Example: Lava vs Rock → Rock melts, can't resist heat (your tower damaged)
+- Example: Sword vs Paper → Paper is cut through (your tower damaged)
 - Key: DEFENDER loses because their concept simply CAN'T stop the attack (NOT amplification)
 - NOT backfire - just simple failure
 
@@ -177,10 +177,10 @@ THINK STEP BY STEP before deciding:
 
 ## CRITICAL RULES:
 
-1. **Win vs Loss vs Backfire** (Tower Colors: Attacker/AI = RED, Defender/Player = BLUE): 
-   - DIRECT_WIN: Defender wins → Attacker's RED tower (AI) damaged
-   - DIRECT_LOSS: Defender loses simply → Defender's BLUE tower (Player) damaged - defense just fails
-   - BACKFIRE_WIN: Defender loses badly → Defender's BLUE tower (Player) damaged - defense amplifies attack
+1. **Win vs Loss vs Backfire** (Tower Colors: AI = RED, Player = BLUE): 
+   - DIRECT_WIN: Defender wins → AI's RED tower damaged
+   - DIRECT_LOSS: Defender loses → Player's BLUE tower damaged (your tower) - defense just fails
+   - BACKFIRE_WIN: Defender loses badly → Player's BLUE tower damaged (your tower) - defense amplifies attack
    
 2. **Backfire Detection** (MOST IMPORTANT):
    Only use BACKFIRE_WIN if defender's concept actively AMPLIFIES/FUELS/CONDUCTS AND reaction dominates.
@@ -201,10 +201,10 @@ THINK STEP BY STEP before deciding:
    - Concepts exist in different realms (physical vs emotional, material vs digital)
    - ALWAYS explain WHY the attack is ineffective, don't just say "incompatible"
 
-4. **Damage Logic** (RED tower = AI/Attacker, BLUE tower = Player/Defender): 
-   - DIRECT_WIN: 20-40 damage to RED tower (AI/attacker) only
-   - DIRECT_LOSS: 20-40 damage to BLUE tower (Player/defender) only
-   - BACKFIRE_WIN: 25-40 damage to BLUE tower (Player/defender) only - usually higher damage
+4. **Damage Logic** (RED tower = AI's tower, BLUE tower = your tower): 
+   - DIRECT_WIN: 20-40 damage to RED tower (AI's tower) only
+   - DIRECT_LOSS: 20-40 damage to BLUE tower (your tower) only
+   - BACKFIRE_WIN: 25-40 damage to BLUE tower (your tower) only - usually higher damage
    - NEUTRAL_NO_DAMAGE: 0 damage to both towers
    - MUTUAL_DESTRUCTION: 15-30 damage to BOTH towers (RED and BLUE)
 
@@ -401,7 +401,7 @@ async function callOpenAI_Tier2_Distill(tier1Result, attackingConcept, defending
 Rules:
 - Write 2-3 sentences (25-35 words total) explaining WHAT happened, WHY, and WHAT NEXT
 - ALWAYS include the causal logic - explain WHY the outcome happened
-- State which tower was damaged: RED tower (AI/attacker) or BLUE tower (Player/defender)
+- State which tower was damaged: RED tower (AI's tower) or BLUE tower (your tower)
 - Be clear, educational, and accurate to the reasoning
 - Don't use technical jargon - make it narrative and understandable
 - Don't use phrases like "domain mismatch" - explain WHY in plain terms`;
@@ -418,11 +418,11 @@ CONCEPTS: ${attackingConcept} (attacker) vs ${defendingConcept} (defender)
 Write explanation with 3 parts:
 1. WHAT: What interaction happened
 2. WHY: The logical reason for the outcome (explain the actual reason, not jargon)
-3. THEN: What continued forward to damage which tower (RED = AI, BLUE = Player)
+3. THEN: What continued forward to damage which tower (RED = AI's tower, BLUE = your tower)
 
 Examples:
 - "Ocean extinguished fire completely. With nothing left to stop it, the massive wave surged forward to damage AI's RED tower!"
-- "Small water bucket reacted explosively with sodium, amplifying the attack. The explosion occurred at Player's BLUE tower, causing major damage!"
+- "Small water bucket reacted explosively with sodium, amplifying the attack. The explosion occurred at your tower, causing major damage!"
 - "Nuclear weapon can't destroy YouTube - there's no single point of failure across distributed servers. Both towers remain safe!"
 - "Ocean neutralized sodium instantly - billions of gallons overwhelmed the tiny reaction. Tsunami continued forward, damaging AI's RED tower!"
 
@@ -643,9 +643,9 @@ Your job: Determine how two concepts would interact in a battle, considering phy
 - Defender's concept simply FAILS to stop the attack
 - Attacker takes 0 damage, defender takes full damage
 - Defense is ineffective and attack reaches defender's tower
-- Example: Fire vs Tree → Tree burns, can't stop fire (PLAYER's BLUE tower damaged)
-- Example: Lava vs Rock → Rock melts, can't resist heat (PLAYER's BLUE tower damaged)
-- Example: Sword vs Paper → Paper is cut through (PLAYER's BLUE tower damaged)
+- Example: Fire vs Tree → Tree burns, can't stop fire (your tower damaged)
+- Example: Lava vs Rock → Rock melts, can't resist heat (your tower damaged)
+- Example: Sword vs Paper → Paper is cut through (your tower damaged)
 - Key: DEFENDER loses because their concept simply CAN'T stop the attack (NOT amplification)
 - NOT backfire - just simple failure
 
@@ -683,10 +683,10 @@ Your job: Determine how two concepts would interact in a battle, considering phy
 
 ## CRITICAL RULES:
 
-1. **Win vs Loss vs Backfire** (Tower Colors: Attacker/AI = RED, Defender/Player = BLUE): 
-   - DIRECT_WIN: Defender wins → Attacker's RED tower (AI) damaged
-   - DIRECT_LOSS: Defender loses simply → Defender's BLUE tower (Player) damaged - defense just fails
-   - BACKFIRE_WIN: Defender loses badly → Defender's BLUE tower (Player) damaged - defense amplifies attack
+1. **Win vs Loss vs Backfire** (Tower Colors: AI = RED, Player = BLUE): 
+   - DIRECT_WIN: Defender wins → AI's RED tower damaged
+   - DIRECT_LOSS: Defender loses → Player's BLUE tower damaged (your tower) - defense just fails
+   - BACKFIRE_WIN: Defender loses badly → Player's BLUE tower damaged (your tower) - defense amplifies attack
    
 2. **Backfire Detection** (MOST IMPORTANT):
    Only use BACKFIRE_WIN if defender's concept actively AMPLIFIES/FUELS/CONDUCTS AND reaction dominates.
@@ -979,14 +979,15 @@ async function generateLessonMessage(attackingConcept, defendingConcept, battleR
 ${tier1Reasoning ? 'You have access to the battle\'s internal reasoning - use it for context and deeper understanding of what happened.' : ''} 
 
 Rules:
-- ALWAYS start with "YOU LEARNED:" then outcome (e.g., "YOU LEARNED: 💀 DIRECT LOSS - Tree burned, fire damaged your tower!")
+- ALWAYS start with "YOU LEARNED: [Emoji] [OUTCOME LABEL]" on first line
+- Then start the lesson directly (no need to repeat battle explanation - they already saw it)
 - NEVER say "BACKFIRE WIN" - just say "BACKFIRE" (it's a loss for player, no "win")
 - NEVER say "DIRECT WIN" or "DIRECT LOSS" - just say "VICTORY" or "DEFEATED"
 - ALWAYS say "your tower" not "blue tower" (player is blue team)
 - ALWAYS say "AI's tower" not "red tower" (AI is red team)
 - Be conversational and acknowledge player choices NATURALLY
 - Recognize when player found equivalent solution (same outcome = smart choice!)
-- Keep explanations SHORT (2-3 sentences max)
+- Keep lesson SHORT (2-3 sentences max)
 - Flow naturally, don't follow rigid templates
 
 OUTCOME LABELS FOR PLAYER:
@@ -1010,7 +1011,9 @@ ${tier1Reasoning ? `INTERNAL REASONING (for context):
 ${tier1Reasoning}
 
 ` : ''}Format: 
-YOU LEARNED: Emoji [OUTCOME LABEL]
+
+Line 1: YOU LEARNED: [Emoji] [OUTCOME LABEL]
+Line 2+: Your lesson (no need to repeat what happened in the battle - just teach the mechanic)
 
 Use these exact labels:
 - ✅ VICTORY (for direct_win)
@@ -1019,7 +1022,9 @@ Use these exact labels:
 - 🚫 INEFFECTIVE (for neutral_no_damage)
 - ⚔️ MUTUAL DESTRUCTION (for mutual_destruction)
 
-Great! You followed the hint. [2 sentences explaining the mechanic]
+Example:
+YOU LEARNED: ✅ VICTORY
+Great! You followed the hint. [Explain the mechanic in 2 sentences]
 
 Remember: Say "your tower" (player is blue), say "AI's tower" (AI is red).`;
     } else {
@@ -1042,13 +1047,12 @@ ${sameOutcome ?
     `✅ SAME OUTCOME! Player achieved the intended outcome with different concept.` :
     `⚠️ DIFFERENT OUTCOME! Player got ${battleResult.outcome_type} instead of ${tutorialGuidance.outcome_type}.`}
 
-Write SHORT, NATURAL lesson (2-3 sentences):
+Write SHORT, NATURAL lesson:
 
-1. First line: "YOU LEARNED: Emoji [OUTCOME LABEL] - Brief what happened"
+1. First line: "YOU LEARNED: [Emoji] [OUTCOME LABEL]" (just the outcome, no explanation)
    Use labels: ✅ VICTORY, 💀 DEFEATED, 💥 BACKFIRE, 🚫 INEFFECTIVE, ⚔️ MUTUAL DESTRUCTION
-   Say "your tower" not "blue tower", "AI's tower" not "red tower"
 
-2. Second part - ADAPT based on outcome match:
+2. Then the lesson - ADAPT based on outcome match (don't repeat battle explanation):
    
    IF SAME OUTCOME (they got it right with different concept):
    - Start naturally: "Smart choice!", "Nice!", "Great thinking!", "Excellent!"
@@ -1057,9 +1061,11 @@ Write SHORT, NATURAL lesson (2-3 sentences):
    - Keep it SHORT and positive
    
    IF DIFFERENT OUTCOME (they got different result):
-   - Acknowledge what happened: "I see ${defendingConcept} led to a different result..."
-   - Briefly note intended lesson: "I suggested ${tutorialGuidance.suggested_answer} to show ${tutorialGuidance.lesson_focus.split('-')[0]}"
-   - Keep it educational but not harsh
+   - Acknowledge what happened with their choice
+   - Explain WHY the suggested answer would have worked differently
+   - Use the internal reasoning to explain the mechanism/logic
+   - Example: "I suggested YouTube because it has no single point of failure across distributed servers - a physical attack can't destroy it. Dinosaur is physical and vulnerable."
+   - Keep it educational and explain the actual reasoning
 
 NO rigid structure. Flow naturally. 2-3 sentences total.`;
     }
@@ -1165,8 +1171,6 @@ Keep it SHORT and clear.`;
         if (followedHint) {
             return `YOU LEARNED: ${emoji} ${friendlyLabel}
 
-${playerFriendlyExplanation}
-
 Great! This demonstrates ${tutorialGuidance.lesson_focus}.`;
         } else {
             // Check if they achieved same outcome
@@ -1175,15 +1179,12 @@ Great! This demonstrates ${tutorialGuidance.lesson_focus}.`;
             if (sameOutcome) {
                 return `YOU LEARNED: ${emoji} ${friendlyLabel}
 
-${playerFriendlyExplanation}
-
 Smart choice! ${defendingConcept} works similarly to ${tutorialGuidance.suggested_answer}. This demonstrates ${tutorialGuidance.lesson_focus}.`;
             } else {
+                // Different outcome - explain WHY suggested answer would have been different
                 return `YOU LEARNED: ${emoji} ${friendlyLabel}
 
-${playerFriendlyExplanation}
-
-I suggested ${tutorialGuidance.suggested_answer} to demonstrate ${tutorialGuidance.lesson_focus.split(' - ')[0]}, but ${defendingConcept} led to a different outcome.`;
+${defendingConcept} led to ${friendlyLabel}. I suggested ${tutorialGuidance.suggested_answer} to teach ${tutorialGuidance.lesson_focus.split(' - ')[0]} - it would work because ${tutorialGuidance.lesson_focus.split(' - ')[1] || 'of its unique properties'}.`;
             }
         }
     }
