@@ -8,7 +8,7 @@ function initBackgroundMusic() {
     if (!backgroundMusic) {
         backgroundMusic = new Audio('audio/battle-theme.mp3');
         backgroundMusic.loop = true;
-        backgroundMusic.volume = 0.5;
+        backgroundMusic.volume = 0.8;
     }
     backgroundMusic.play().catch(err => {
         console.warn('Audio playback failed:', err);
