@@ -60,11 +60,21 @@ async function handleAttackInput(concept, team) {
         // Declare variables outside try block so they're accessible in finally
         let reasoningPromise = null;
         let result = null;
+        let llmPromise = null;
 
         try {
             // Create player's visual
             const defendVisual = await createAttackVisual(defendingConcept, defendingTeam);
             defendVisual.userData.team = defendingTeam;
+            
+            // START LLM REASONING IMMEDIATELY (in parallel with animations)
+            // Don't await yet - let it think while animations play!
+            console.log('[Optimization] Starting LLM reasoning in parallel with animations...');
+            llmPromise = callOpenAI(attackingConcept, defendingConcept);
+            
+            // Update status to show we're analyzing
+            showMessage('🤔 AI analyzing your defense...', 'blue');
+            showMessage('🤔 AI analyzing defense...', 'red');
             
             // Get AI's already created visual
             const attackVisual = gameState.aiWalkingCharacter || gameState.currentActiveAttack.visual;
@@ -73,6 +83,7 @@ async function handleAttackInput(concept, team) {
             }
             
             // Stop AI walking animation and spawn player character
+            // LLM is thinking in the background during this!
             if (typeof stopAIWalkAndStartBattle === 'function') {
                 await stopAIWalkAndStartBattle(attackVisual, defendVisual, attackingTeam, defendingTeam);
             } else {
@@ -84,8 +95,29 @@ async function handleAttackInput(concept, team) {
                 ]);
             }
             
-            // Call LLM with new 5-outcome system
-            result = await callOpenAI(attackingConcept, defendingConcept);
+            // START STANDOFF LOOP - Characters interact while waiting for LLM
+            console.log('[Standoff] Starting interactive standoff animation...');
+            let stopStandoff = null;
+            if (typeof startCharacterStandoffLoop === 'function') {
+                stopStandoff = startCharacterStandoffLoop(attackVisual, defendVisual);
+            }
+            
+            // NOW await LLM result (standoff loop continues during wait!)
+            console.log('[Optimization] Standoff active, awaiting LLM result...');
+            result = await llmPromise;
+            
+            // STOP STANDOFF - LLM response received
+            if (stopStandoff) {
+                stopStandoff();
+                console.log('[Standoff] Stopped - transitioning to collision...');
+            }
+            
+            // Camera transition before collision
+            if (typeof cameraPrepareForCollision === 'function') {
+                await cameraPrepareForCollision(400);
+            } else {
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
             
             console.log('[5-Outcome System] Result:', result);
             

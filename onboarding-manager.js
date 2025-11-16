@@ -49,7 +49,7 @@ const ONBOARDING_BATTLES = [
         emoji: "🔊",
         hintTitle: "AI ATTACKED WITH: ECHO CHAMBER",
         hintText: "Echo chambers amplify sound infinitely in a feedback loop. What creature makes a loud, repetitive noise?\n\n💡 Try typing: DUCK\n\nLogic: Environments can become your weapon.",
-        lessonAfter: "🦆 YOU LEARNED: Environmental Amplification\n\nThe echo chamber AMPLIFIES your duck's quack infinitely! The feedback loop becomes so powerful it collapses the chamber.\n\nA weak concept becomes overwhelming in the right environment. Another DIRECT WIN!\n\n🎓 TUTORIAL COMPLETE!\n\nYou've mastered all 5 outcome types:\n✅ Direct Win | 💀 Direct Loss | 💥 Backfire | 🚫 Ineffective Attack | ⚔️ Mutual Destruction\n\n⚔️ WELCOME TO THE REAL GAME!\n\nRemember: An LLM is leading this game in REAL-TIME. Every battle is uniquely evaluated.\n\nBE CREATIVE. There is NO LIMIT to what you can come up with. Black holes, abstract concepts, emotions, quantum physics - anything works!\n\nFigure out the mechanics. Learn from each battle. Beat the AI at its own game!"
+        lessonAfter: "🦆 YOU LEARNED: Environmental Amplification\n\nThe echo chamber AMPLIFIES your duck's quack infinitely! The feedback loop becomes so powerful it collapses the chamber.\n\nA weak concept becomes overwhelming in the right environment. Another DIRECT WIN!"
     }
 ];
 
@@ -161,20 +161,71 @@ function advanceToNextBattle() {
 
 // Complete onboarding and transition to normal gameplay
 function completeOnboarding() {
-    console.log('🎉 Onboarding complete! Starting normal gameplay...');
+    console.log('🎉 Onboarding complete! Showing completion screen...');
     
-    onboardingState.active = false;
-    onboardingState.phase = null;
+    // Show final completion screen
+    showCompletionScreen();
+}
+
+// Show dramatic completion screen after all tutorials
+function showCompletionScreen() {
+    console.log('🎓 Showing tutorial completion screen...');
     
-    // Resume game
-    resumeGame();
+    // Keep game paused
+    pauseGame();
     
-    // Start normal AI attack after brief delay
-    setTimeout(() => {
-        if (typeof initiateAIAttack === 'function') {
-            initiateAIAttack();
+    const completionMessage = `🎓 TUTORIAL COMPLETE!
+
+You've mastered all 5 outcome types:
+
+✅ DIRECT WIN - Your defense dominates and damages enemy tower
+💀 DIRECT LOSS - Your defense fails, enemy damages your tower  
+💥 BACKFIRE - Your defense amplifies the attack against you
+🚫 INEFFECTIVE - Attack can't affect defender (both safe)
+⚔️ MUTUAL DESTRUCTION - Both concepts destroyed equally
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+⚔️ THE REAL GAME STARTS NOW ⚔️
+
+An AI is judging every battle in REAL-TIME.
+Every concept. Every interaction. Uniquely evaluated.
+
+THE LIMIT IS YOUR CREATIVITY.
+
+• Try black holes, quantum physics, abstract emotions
+• Combine concepts: "Wet cat", "Frozen fire", "Angry ocean"
+• Use metaphors, wordplay, scientific principles
+• Discover interactions the AI might not expect
+
+There are NO wrong answers.
+Only creative thinking and strategic choices.
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+Ready to unleash your imagination?`;
+    
+    displayOnboardingBanner(
+        completionMessage,
+        '',
+        '⚔️ BEGIN REAL BATTLES →',
+        () => {
+            console.log('🎮 Starting real gameplay...');
+            
+            onboardingState.active = false;
+            onboardingState.phase = null;
+            
+            // Resume game
+            resumeGame();
+            
+            // Start normal AI attack after brief delay
+            setTimeout(() => {
+                if (typeof initiateAIAttack === 'function') {
+                    initiateAIAttack();
+                }
+            }, 1000);
         }
-    }, 1000);
+    );
 }
 
 // Pause game - freeze animations, dim background, hide timer

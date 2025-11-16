@@ -95,6 +95,12 @@ Imagine these two concepts actually encountering each other in the real world. T
    - If physical: mass, energy, temperature, state of matter, chemical composition
    - If abstract: how do they manifest? what effects do they produce?
    - If digital/informational: how are they structured? where do they exist?
+   - **AMBIGUOUS CONCEPTS:** If a concept can be interpreted as physical OR abstract, ALWAYS choose physical
+     * "Echo chamber" → Physical room with acoustic properties, NOT social media concept
+     * "Tower" → Physical building structure, NOT abstract authority
+     * "Mirror" → Physical reflective glass, NOT metaphorical self-reflection
+   - **DESCRIPTIVE WORDS:** Ignore adjectives like "big", "small", "large" - focus on core concept
+     * "Big duck" = "Duck" = "Small duck" (all are ducks)
 
 2. **The Encounter**: When they meet, what physical/chemical/logical processes occur?
    - Do they chemically react? (combustion, explosion, neutralization, dissolution)
@@ -195,11 +201,39 @@ THINK STEP BY STEP before deciding:
    - **When in doubt: Check if defender's scale overwhelms the reaction → DIRECT_WIN. If it just fails → DIRECT_LOSS**
    - Simple failure = DIRECT_LOSS, NOT backfire
    
-3. **Ineffective Attacks**: Use NEUTRAL_NO_DAMAGE when attack cannot succeed due to:
-   - No single point of failure (decentralized systems)
-   - Physical attacks can't affect abstract/digital concepts
-   - Concepts exist in different realms (physical vs emotional, material vs digital)
-   - ALWAYS explain WHY the attack is ineffective, don't just say "incompatible"
+3. **Ineffective Attacks vs Physical Mismatch** (CRITICAL - Most Common Mistake):
+   
+   **NEUTRAL_NO_DAMAGE is RARE! Only use when attack LITERALLY can't affect defender:**
+   - Physical attack vs Pure abstract concept (Sword vs Love, Fire vs Justice) → NEUTRAL ✓
+   - Physical attack vs Decentralized system (Nuke vs YouTube) → NEUTRAL ✓
+   - Physical attack vs Conceptual idea (Fire vs Democracy) → NEUTRAL ✓
+   
+   **AMBIGUOUS CONCEPTS - Default to Physical Interpretation:**
+   - "Echo chamber" = Physical room that echoes (architecture), NOT abstract social concept
+   - "Tower" = Physical building, NOT abstract idea
+   - "Mirror" = Physical reflective surface, NOT metaphorical reflection
+   - **Rule:** If a concept CAN be physical, treat it as physical unless CLEARLY abstract
+   - Physical creatures (duck, big duck, dinosaur) can ALL interact with physical structures
+   
+   **DESCRIPTIVE VARIATIONS are the SAME CONCEPT:**
+   - "Duck" = "Big duck" = "Large duck" = "Small duck" (all are ducks!)
+   - "Fire" = "Big fire" = "Small flame" (all are fire!)
+   - "Rock" = "Large rock" = "Boulder" = "Pebble" (all are rocks, just different scales)
+   - Don't penalize for descriptive adjectives - focus on the core concept
+   
+   **DON'T use NEUTRAL for physical scale mismatches - use DIRECT_WIN or DIRECT_LOSS:**
+   - Small physical vs Large physical = Large one wins, NOT neutral! ⚠️
+   - Sodium (tiny metal) vs Dinosaur (massive) → Dinosaur STOMPS sodium, continues forward → DIRECT_WIN ✓
+   - Pebble vs Mountain → Mountain unaffected, pebble does nothing → DIRECT_LOSS ✓ (or NEUTRAL if mountain can't "attack back")
+   - Candle flame vs Ocean → Ocean extinguishes and continues → DIRECT_WIN ✓
+   - Echo chamber (physical room) vs Duck (physical bird) → Duck damages or enters the structure → DIRECT_WIN ✓
+   
+   **Key Rule:** If both concepts exist in the same realm (both physical, both abstract), one MUST win/lose based on scale/power. NEUTRAL only when they CAN'T interact across different realms.
+   
+   **NEUTRAL_NO_DAMAGE Requirements:**
+   - Attack exists in different domain than defender (physical ≠ abstract, material ≠ digital)
+   - OR defender has no single point of failure to target
+   - ALWAYS explain WHY attack can't affect defender, don't just say "incompatible"
 
 4. **Damage Logic** (RED tower = AI's tower, BLUE tower = your tower): 
    - DIRECT_WIN: 20-40 damage to RED tower (AI's tower) only
@@ -241,13 +275,32 @@ Your task:
 Respond with VALID JSON ONLY (no markdown, no code blocks):
 
 {
-  "reasoning": "Your complete step-by-step analysis (500-1000 words) following the structure below",
+  "reasoning": "Your complete step-by-step analysis (300-400 words) following the structure below",
+  "brief_explanation": "Concise 25-35 word summary for the player (WHAT happened, WHY, and THEN what)",
   "outcome_type": "direct_win" | "direct_loss" | "backfire_win" | "neutral_no_damage" | "mutual_destruction",
   "winner": "attacker" | "defender" | "none",
   "attacker_damage": 0 | 1,
   "defender_damage": 0 | 1,
   "damage_amount": 0-40
 }
+
+IMPORTANT: Your response must include TWO explanations:
+
+1. "reasoning": Your detailed step-by-step analysis (250-300 words, keep focused!)
+   - Follow the "IMAGINE THE REAL-WORLD ENCOUNTER" steps above
+   - Describe what ACTUALLY happens in reality
+   - Explain mechanisms, scale, continuation logic
+   - Be thorough but concise - balance detail with response time
+   
+2. "brief_explanation": Concise player-facing summary (25-35 words)
+   - Write as if narrating what happened to the player
+   - Format: WHAT happened + WHY + THEN what
+   - State which tower damaged (RED = AI's tower, BLUE = your tower)
+   - Keep it educational and engaging
+   - Examples:
+     * "Ocean extinguished fire completely. With nothing left to stop it, the massive wave surged forward to damage AI's RED tower!"
+     * "Small water bucket reacted explosively with sodium, amplifying the attack. The explosion occurred at your tower, causing major damage!"
+     * "Nuclear weapon can't destroy YouTube - there's no single point of failure across distributed servers. Both towers remain safe!"
 
 IMPORTANT MAPPING:
 - outcome_type="direct_win" → winner="defender", defender_damage=0, attacker_damage=1
@@ -293,8 +346,26 @@ IMAGINE THE REAL-WORLD ENCOUNTER - THINK STEP BY STEP:
 6. NOW APPLY DECISION TREE based on your real-world analysis above:
    
    Step 1: INTERACTION CHECK - Can attacker meaningfully affect defender?
-   - If NO (explain WHY: no single point of failure, physical can't affect digital, etc.) → neutral_no_damage
-   - If YES → Continue to Step 2
+   - ⚠️ CRITICAL: NEUTRAL is RARE - only for cross-domain incompatibility!
+   - Physical vs Physical (different scales) = NOT neutral - one wins! (Continue to Step 2)
+   - Physical vs Abstract/Digital = neutral_no_damage ✓
+   - Attack vs Decentralized system = neutral_no_damage ✓
+   
+   **First: Resolve Ambiguous Concepts:**
+   - Is "echo chamber" physical room or abstract idea? → Default to PHYSICAL room
+   - Is "tower" physical building or abstract concept? → Default to PHYSICAL building
+   - Are "duck" and "big duck" different? → NO, same physical bird
+   - When in doubt, assume PHYSICAL interpretation if concept can be tangible
+   
+   Examples:
+   - Echo chamber (physical room) vs Big duck (physical bird) → Both physical → Continue to Step 2 ✓
+   - Echo chamber vs Duck (same as "big duck") → Both physical → Continue to Step 2 ✓
+   - Sodium (physical metal) vs Dinosaur (physical creature) → Both physical → Continue to Step 2 ✓
+   - Sword (physical) vs Love (purely abstract emotion) → Cross-domain → neutral_no_damage ✓
+   - Nuke (physical) vs YouTube (distributed digital) → No single target → neutral_no_damage ✓
+   
+   If NO meaningful interaction (cross-domain only!) → neutral_no_damage
+   If YES (same domain, one can affect the other) → Continue to Step 2
    
    Step 2: BACKFIRE CHECK - Does defender AMPLIFY/FUEL/CONDUCT attacker AND is reaction significant?
    - ⚠️ CRITICAL: Must be FREE/ACCESSIBLE reactants, not bound in structures
@@ -318,6 +389,7 @@ IMAGINE THE REAL-WORLD ENCOUNTER - THINK STEP BY STEP:
    - ⚠️ CRITICAL: Massive/physical concepts have MOMENTUM
    - Ocean stops fire → Ocean continues as wave → direct_win ✓
    - Ocean stops sodium → Ocean continues as tsunami → direct_win ✓
+   - Dinosaur vs sodium → Dinosaur STOMPS sodium, continues walking → direct_win ✓
    - Shield blocks arrow → Shield rams forward → direct_win ✓
    - YouTube blocks nuke → YouTube has no physical form to continue → neutral_no_damage ✓
    - If defender CONTINUES forward and damages attacker's RED tower → direct_win
@@ -330,7 +402,9 @@ IMAGINE THE REAL-WORLD ENCOUNTER - THINK STEP BY STEP:
    - Write your reasoning as if describing what ACTUALLY happened in reality
    - Don't just categorize - explain the actual mechanism and result
 
-Provide your complete reasoning in the "reasoning" field (describe the real-world encounter), then the outcome data in JSON format.`;
+Provide your complete reasoning in the "reasoning" field (describe the real-world encounter), then the outcome data in JSON format.
+
+CRITICAL: Keep reasoning focused (250-300 words) to ensure complete JSON response with all required fields!`;
 
     try {
         const startTime = Date.now();
@@ -394,6 +468,9 @@ Provide your complete reasoning in the "reasoning" field (describe the real-worl
     }
 }
 
+// DEPRECATED: Tier 2 function no longer used in single-tier system
+// Tier 1 now generates brief_explanation directly
+// Kept for reference/potential future use or A/B testing
 // TIER 2: Distill Tier 1 reasoning into concise 25-35 word explanation with causal logic
 async function callOpenAI_Tier2_Distill(tier1Result, attackingConcept, defendingConcept) {
     const systemPrompt = `You are a concise battle narrator. Your job is to distill technical reasoning into brief, educational explanation.
@@ -550,59 +627,50 @@ async function callOpenAI(attackingConcept, defendingConcept) {
                 reasoning_debug: `[Hardcoded onboarding result - player followed hint]`
             };
         } else {
-            // Player went off-script - will use Tier 1 + Tier 2 with tutorial context
-            console.log('[Onboarding] Player went off-script - using two-tier system with tutorial context');
+            // Player went off-script - will use Tier 1 with tutorial context
+            console.log('[Onboarding] Player went off-script - using single-tier system with tutorial context');
         }
     }
     
-    // TWO-TIER SYSTEM: Call Tier 1 for reasoning, then Tier 2 for distillation
+    // SINGLE-TIER SYSTEM: Tier 1 generates both reasoning AND brief explanation
     try {
-        console.log('[Two-Tier] Starting Tier 1 (Deep Reasoning)...');
+        console.log('[Single-Tier] Starting reasoning with brief explanation...');
         
-        // TIER 1: Deep chain-of-thought reasoning
+        // TIER 1: Deep chain-of-thought reasoning + brief explanation
         const tier1Result = await callOpenAI_Tier1_Reasoning(
             attackingConcept, 
             defendingConcept, 
             isOnboarding ? tutorialGuidance : null
         );
         
-        console.log('[Two-Tier] Tier 1 complete. Starting Tier 2 (Distillation)...');
+        console.log('[Single-Tier] Complete. Using brief explanation from Tier 1...');
         
-        // TIER 2: Distill reasoning into concise explanation
-        const tier2Result = await callOpenAI_Tier2_Distill(
-            tier1Result,
-            attackingConcept,
-            defendingConcept
-        );
-        
-        console.log('[Two-Tier] Tier 2 complete. Combining results...');
-        
-        // COMBINE RESULTS: Outcome from Tier 1, Explanation from Tier 2
-        const combinedResult = {
+        // Use Tier 1's brief_explanation directly (no Tier 2 needed)
+        const result = {
             outcome_type: tier1Result.outcome_type,
             winner: tier1Result.winner,
             attacker_damage: tier1Result.attacker_damage,
             defender_damage: tier1Result.defender_damage,
             damage_amount: tier1Result.damage_amount,
-            explanation: tier2Result.explanation,
-            teaching_point: tier1Result.reasoning.split('.')[0] + '.', // First sentence as teaching point
-            reasoning_debug: tier1Result.reasoning  // For debugging and lesson generation
+            explanation: tier1Result.brief_explanation,  // Use Tier 1's brief explanation
+            teaching_point: tier1Result.brief_explanation ? tier1Result.brief_explanation.split('.')[0] + '.' : tier1Result.reasoning.split('.')[0] + '.', // First sentence
+            reasoning_debug: tier1Result.reasoning  // Keep for debugging/lessons
         };
         
-        console.log('[Two-Tier] Combined result:', {
-            outcome_type: combinedResult.outcome_type,
-            winner: combinedResult.winner,
-            explanation: combinedResult.explanation
+        console.log('[Single-Tier] Result:', {
+            outcome_type: result.outcome_type,
+            winner: result.winner,
+            explanation: result.explanation
         });
         
         if (isOnboarding) {
-            console.log('[Onboarding] LLM generated explanation:', combinedResult.explanation);
+            console.log('[Onboarding] LLM generated explanation:', result.explanation);
         }
         
-        return combinedResult;
+        return result;
         
     } catch (error) {
-        console.error('[Two-Tier] Error in two-tier system:', error);
+        console.error('[Single-Tier] Error in reasoning:', error);
         
         // Fallback response - neutral no damage
         return {
@@ -613,13 +681,13 @@ async function callOpenAI(attackingConcept, defendingConcept) {
             damage_amount: 0,
             explanation: 'Unable to connect to AI. No damage to either tower.',
             teaching_point: 'Connection error occurred.',
-            reasoning_debug: '[Error: Failed to complete two-tier reasoning]'
+            reasoning_debug: '[Error: Failed to complete reasoning]'
         };
     }
 }
 
 // OLD CODE BELOW - KEEPING FOR REFERENCE BUT NOT USED
-// (Can be deleted after testing confirms two-tier system works)
+// (Can be deleted after testing confirms single-tier system works)
 /*
 // OLD SINGLE-TIER IMPLEMENTATION
 async function callOpenAI_OLD_SINGLE_TIER(attackingConcept, defendingConcept) {
@@ -1070,17 +1138,7 @@ Write SHORT, NATURAL lesson:
 NO rigid structure. Flow naturally. 2-3 sentences total.`;
     }
     
-    if (isLastStep) {
-        userPrompt += `
-
-IMPORTANT: This is the FINAL step. End with:
-
-"🎓 TUTORIAL COMPLETE!
-You've mastered all 5 outcome types:
-✅ Direct Win | 💀 Direct Loss | 💥 Backfire | 🚫 Ineffective | ⚔️ Mutual Destruction
-
-⚔️ REAL GAME STARTS NOW! Be creative - anything works!"`;
-    }
+    // Note: Don't add completion text here - there's a separate completion screen after step 6
     
     userPrompt += `
 

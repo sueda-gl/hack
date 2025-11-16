@@ -25,6 +25,13 @@ function addToBattleHistory(attackConcept, defendConcept, explanation, outcome_t
 
 // Update health and check for victory
 function updateHealth(team, damage) {
+    console.log(`[Health Update] ${team} team taking ${damage} damage`);
+    
+    // Show damage indicator animation
+    if (damage > 0 && typeof showDamageNumber === 'function') {
+        showDamageNumber(team, damage);
+    }
+    
     if (team === 'blue') {
         gameState.blueHealth = Math.max(0, gameState.blueHealth - damage);
         updateHealthBar('blue', gameState.blueHealth);

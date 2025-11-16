@@ -1,7 +1,7 @@
 // UI Manager
 // Handles all UI updates, messages, and display functions
 
-// Update the health bar UI
+// Update the health bar UI (call this for percentage updates only)
 function updateHealthBar(team, health) {
     const healthBar = document.getElementById(`${team}-health`);
     if (healthBar) {
@@ -17,8 +17,107 @@ function updateHealthBar(team, health) {
         }
     }
     
+    // Update HP text display (e.g., "75/100")
+    const hpText = document.getElementById(`${team}-hp-text`);
+    if (hpText) {
+        hpText.textContent = `${health}/100`;
+        
+        // Color the text based on health
+        if (health > 60) {
+            hpText.style.color = '#22c55e';
+        } else if (health > 30) {
+            hpText.style.color = '#f59e0b';
+        } else {
+            hpText.style.color = '#ef4444';
+        }
+    }
+    
     // Update tower visual health (make crystal pulse or dim)
     updateTowerHealth(team, health);
+}
+
+// Show animated damage number above health bar
+function showDamageNumber(team, damageAmount) {
+    console.log(`[Damage Indicator] Showing -${damageAmount} HP for ${team} team`);
+    
+    // Find the player info container
+    const playerInfo = document.querySelector(`.player-info .player-name.${team}-team`)?.parentElement;
+    if (!playerInfo) {
+        console.warn('Could not find player info container for team:', team);
+        return;
+    }
+    
+    // Create damage indicator element - MUCH BIGGER AND MORE VISIBLE
+    const damageIndicator = document.createElement('div');
+    damageIndicator.className = 'damage-indicator';
+    damageIndicator.textContent = `-${damageAmount} HP`;
+    damageIndicator.style.cssText = `
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: 'Press Start 2P', cursive;
+        font-size: 24px;
+        font-weight: bold;
+        color: #fff;
+        background: ${team === 'blue' ? 'linear-gradient(180deg, #3b82f6 0%, #1e40af 100%)' : 'linear-gradient(180deg, #ef4444 0%, #991b1b 100%)'};
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 3px solid ${team === 'blue' ? '#60a5fa' : '#fca5a5'};
+        box-shadow: 
+            0 0 20px ${team === 'blue' ? '#60a5fa' : '#fca5a5'},
+            0 0 40px ${team === 'blue' ? '#3b82f6' : '#ef4444'},
+            4px 4px 0 rgba(0, 0, 0, 0.8);
+        z-index: 10000;
+        pointer-events: none;
+        animation: damageFloat 2s ease-out forwards;
+        white-space: nowrap;
+    `;
+    
+    // Add to player info (positioned relative to health bar)
+    playerInfo.style.position = 'relative';
+    playerInfo.appendChild(damageIndicator);
+    
+    // Shake the health bar MORE intensely
+    shakeHealthBar(team);
+    
+    // Flash effect on the entire player info box
+    flashPlayerInfo(team);
+    
+    // Remove after animation completes
+    setTimeout(() => {
+        damageIndicator.remove();
+    }, 2000);
+}
+
+// Flash player info box on damage
+function flashPlayerInfo(team) {
+    const playerInfo = document.querySelector(`.player-info .player-name.${team}-team`)?.parentElement;
+    if (!playerInfo) return;
+    
+    // Add flash animation
+    playerInfo.style.animation = 'damageFlash 0.5s ease-out';
+    
+    setTimeout(() => {
+        playerInfo.style.animation = '';
+    }, 500);
+}
+
+// Shake health bar on damage
+function shakeHealthBar(team) {
+    const healthBar = document.getElementById(`${team}-health`);
+    if (!healthBar) return;
+    
+    const parent = healthBar.parentElement;
+    if (!parent) return;
+    
+    // Add shake class
+    parent.classList.add('health-bar-shake');
+    
+    // Remove after animation
+    setTimeout(() => {
+        parent.classList.remove('health-bar-shake');
+    }, 500);
 }
 
 // Display reasoning text with typewriter effect in center of screen

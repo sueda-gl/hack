@@ -13,8 +13,8 @@ const CONFIG = {
     
     // API settings
     MAX_TOKENS: 200,  // For lesson generation (backwards compatibility)
-    TIER1_MAX_TOKENS: 750,   // For chain-of-thought reasoning (balanced speed vs quality)
-    TIER2_MAX_TOKENS: 250,   // For distilling reasoning to 25-35 words with causal logic
+    TIER1_MAX_TOKENS: 500,   // Balanced - generates detailed reasoning + brief explanation with buffer for complete JSON
+    TIER2_MAX_TOKENS: 250,   // [DEPRECATED] No longer used - Tier 1 now generates brief_explanation directly
     TEMPERATURE: 0.7,
     MODEL: 'gpt-4o',
     OPENAI_API_URL: 'https://api.openai.com/v1/chat/completions',

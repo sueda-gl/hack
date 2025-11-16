@@ -402,3 +402,214 @@ async function stopAIWalkAndStartBattle(aiVisual, playerVisual, aiTeam, playerTe
     });
 }
 
+// Create engaging looping animation while waiting for LLM response
+function startCharacterStandoffLoop(visual1, visual2) {
+    console.log('Starting character standoff loop - waiting for LLM...');
+    
+    if (!visual1 || !visual2) {
+        console.warn('Missing visuals for standoff animation');
+        return () => {}; // Return empty stop function
+    }
+    
+    const centerPos = new THREE.Vector3(0, 0, 0);
+    const startTime = Date.now();
+    let animationActive = true;
+    
+    // Store original positions
+    const v1OriginalPos = visual1.position.clone();
+    const v2OriginalPos = visual2.position.clone();
+    
+    // Animation parameters
+    let circleAngle = 0;
+    const circleRadius = 2; // Small circle around center
+    const circleSpeed = 0.3; // Slow circling
+    
+    // Breathing/bobbing animation
+    let breathPhase = 0;
+    const breathSpeed = 2;
+    const breathAmount = 0.3;
+    
+    // Energy buildup effect
+    let energyPhase = 0;
+    const energySpeed = 1.5;
+    
+    // Create ground crack effects
+    createGroundCracks(centerPos);
+    
+    // Create ambient energy particles
+    const particles = createStandoffParticles(visual1, visual2);
+    
+    // Main animation loop
+    const animationLoop = () => {
+        if (!animationActive) return;
+        
+        const elapsed = (Date.now() - startTime) / 1000; // seconds
+        
+        // 1. CIRCLING MOTION - Characters slowly circle around center point
+        circleAngle += circleSpeed * 0.016; // ~60fps
+        
+        const v1Offset = new THREE.Vector3(
+            Math.cos(circleAngle) * circleRadius,
+            0,
+            Math.sin(circleAngle) * circleRadius
+        );
+        
+        const v2Offset = new THREE.Vector3(
+            Math.cos(circleAngle + Math.PI) * circleRadius, // Opposite side
+            0,
+            Math.sin(circleAngle + Math.PI) * circleRadius
+        );
+        
+        // 2. BREATHING/BOBBING - Slight up-down movement
+        breathPhase += breathSpeed * 0.016;
+        const breathOffset = Math.sin(breathPhase) * breathAmount;
+        
+        // Apply positions
+        visual1.position.set(
+            centerPos.x + v1Offset.x,
+            breathOffset,
+            centerPos.z + v1Offset.z
+        );
+        
+        visual2.position.set(
+            centerPos.x + v2Offset.x,
+            breathOffset + 0.2, // Slightly out of phase
+            centerPos.z + v2Offset.z
+        );
+        
+        // 3. ROTATION - Characters face each other
+        const angleToEachOther = Math.atan2(
+            visual2.position.z - visual1.position.z,
+            visual2.position.x - visual1.position.x
+        );
+        visual1.rotation.y = angleToEachOther + Math.PI / 2;
+        visual2.rotation.y = angleToEachOther - Math.PI / 2;
+        
+        // 4. ENERGY BUILDUP - Pulsing scale effect
+        energyPhase += energySpeed * 0.016;
+        const energyPulse = 1 + Math.sin(energyPhase) * 0.05; // 5% pulse
+        
+        visual1.scale.set(energyPulse, energyPulse, energyPulse);
+        visual2.scale.set(energyPulse, energyPulse, energyPulse);
+        
+        // 5. UPDATE PARTICLES
+        updateStandoffParticles(particles, visual1, visual2);
+        
+        // Continue loop
+        requestAnimationFrame(animationLoop);
+    };
+    
+    // Start the animation loop
+    requestAnimationFrame(animationLoop);
+    
+    // Return stop function
+    return () => {
+        console.log('Stopping standoff loop - LLM response received');
+        animationActive = false;
+        
+        // Clean up particles
+        cleanupStandoffParticles(particles);
+        
+        // Reset to original positions and scales
+        visual1.position.copy(centerPos);
+        visual2.position.copy(centerPos);
+        visual1.scale.set(1, 1, 1);
+        visual2.scale.set(1, 1, 1);
+        visual1.rotation.y = 0;
+        visual2.rotation.y = 0;
+    };
+}
+
+// Create ground crack effects during standoff
+function createGroundCracks(centerPos) {
+    const crackCount = 8;
+    for (let i = 0; i < crackCount; i++) {
+        const angle = (i / crackCount) * Math.PI * 2;
+        const distance = 2 + Math.random() * 3;
+        
+        const crackPos = new THREE.Vector3(
+            centerPos.x + Math.cos(angle) * distance,
+            0.1,
+            centerPos.z + Math.sin(angle) * distance
+        );
+        
+        // Simple line geometry for crack
+        const crackGeometry = new THREE.BufferGeometry();
+        const vertices = new Float32Array([
+            centerPos.x, 0.1, centerPos.z,
+            crackPos.x, 0.1, crackPos.z
+        ]);
+        crackGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+        
+        const crackMaterial = new THREE.LineBasicMaterial({
+            color: 0x333333,
+            opacity: 0.5,
+            transparent: true
+        });
+        
+        const crack = new THREE.Line(crackGeometry, crackMaterial);
+        scene.add(crack);
+        
+        // Fade out and remove after animation
+        setTimeout(() => {
+            scene.remove(crack);
+            crackGeometry.dispose();
+            crackMaterial.dispose();
+        }, 10000); // Remove after 10 seconds
+    }
+}
+
+// Create ambient energy particles around characters
+function createStandoffParticles(visual1, visual2) {
+    const particles = [];
+    const particleCount = 20;
+    
+    for (let i = 0; i < particleCount; i++) {
+        const geometry = new THREE.SphereGeometry(0.1, 8, 8);
+        const material = new THREE.MeshBasicMaterial({
+            color: i < particleCount / 2 ? 0x4444ff : 0xff4444,
+            opacity: 0.6,
+            transparent: true
+        });
+        
+        const particle = new THREE.Mesh(geometry, material);
+        particle.userData.offset = Math.random() * Math.PI * 2;
+        particle.userData.speed = 1 + Math.random() * 2;
+        particle.userData.radius = 2 + Math.random() * 1;
+        particle.userData.height = Math.random() * 3;
+        particle.userData.character = i < particleCount / 2 ? visual1 : visual2;
+        
+        scene.add(particle);
+        particles.push(particle);
+    }
+    
+    return particles;
+}
+
+// Update particle positions each frame
+function updateStandoffParticles(particles, visual1, visual2) {
+    particles.forEach((particle, i) => {
+        const char = particle.userData.character;
+        if (!char) return;
+        
+        const time = Date.now() / 1000;
+        const angle = particle.userData.offset + time * particle.userData.speed;
+        
+        particle.position.x = char.position.x + Math.cos(angle) * particle.userData.radius;
+        particle.position.y = particle.userData.height + Math.sin(time * 2) * 0.5;
+        particle.position.z = char.position.z + Math.sin(angle) * particle.userData.radius;
+        
+        // Pulsing opacity
+        particle.material.opacity = 0.3 + Math.sin(time * 3 + particle.userData.offset) * 0.3;
+    });
+}
+
+// Clean up particles when standoff ends
+function cleanupStandoffParticles(particles) {
+    particles.forEach(particle => {
+        scene.remove(particle);
+        if (particle.geometry) particle.geometry.dispose();
+        if (particle.material) particle.material.dispose();
+    });
+}
+

@@ -294,6 +294,35 @@ function cameraZoomToCenter(targetPos, duration) {
     });
 }
 
+// Camera preparation for collision (subtle adjustment after standoff)
+function cameraPrepareForCollision(duration = 500) {
+    return new Promise((resolve) => {
+        const startPos = camera.position.clone();
+        const centerPos = new THREE.Vector3(0, 0, 0);
+        
+        // Slightly adjust camera angle for better view of collision
+        const targetPos = new THREE.Vector3(-15, 18, 45);
+        const startTime = Date.now();
+        
+        function animate() {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 2); // Ease out
+            
+            camera.position.lerpVectors(startPos, targetPos, eased);
+            camera.lookAt(centerPos);
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                resolve();
+            }
+        }
+        
+        animate();
+    });
+}
+
 // Camera zoom back out
 function cameraZoomOut(duration) {
     return new Promise((resolve) => {
