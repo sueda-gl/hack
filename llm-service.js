@@ -1138,7 +1138,17 @@ Write SHORT, NATURAL lesson:
 NO rigid structure. Flow naturally. 2-3 sentences total.`;
     }
     
-    // Note: Don't add completion text here - there's a separate completion screen after step 6
+    if (isLastStep) {
+        userPrompt += `
+
+IMPORTANT: This is the FINAL step. End with:
+
+"🎓 TUTORIAL COMPLETE!
+You've mastered all 5 outcome types:
+✅ Direct Win | 💀 Direct Loss | 💥 Backfire | 🚫 Ineffective | ⚔️ Mutual Destruction
+
+⚔️ REAL GAME STARTS NOW! Be creative - anything works!"`;
+    }
     
     userPrompt += `
 

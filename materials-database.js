@@ -139,7 +139,15 @@ const MATERIALS_DATABASE = [
     { name: "Ion", file: "models/hydrated_sodium_ion.glb", rotationOffset: 0 },
     { name: "Molecule", file: "models/hydrated_sodium_ion.glb", rotationOffset: 0 },
     { name: "Atom", file: "models/hydrated_sodium_ion.glb", rotationOffset: 0 },
-    { name: "Chemistry", file: "models/hydrated_sodium_ion.glb", rotationOffset: 0 }
+    { name: "Chemistry", file: "models/hydrated_sodium_ion.glb", rotationOffset: 0 },
+    
+    // Technology & Digital
+    { name: "YouTube", file: "models/youtube-logo.glb", rotationOffset: 0 },
+    { name: "Youtube", file: "models/youtube-logo.glb", rotationOffset: 0 },
+    { name: "YouTube Logo", file: "models/youtube-logo.glb", rotationOffset: 0 },
+    { name: "Video Platform", file: "models/youtube-logo.glb", rotationOffset: 0 },
+    { name: "Streaming Service", file: "models/youtube-logo.glb", rotationOffset: 0 },
+    { name: "Video Website", file: "models/youtube-logo.glb", rotationOffset: 0 }
 ];
 
 // Export for use in other files
