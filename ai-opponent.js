@@ -149,7 +149,7 @@ async function handleTimeout() {
     const aiConcept = gameState.currentActiveAttack ? gameState.currentActiveAttack.concept : 'Attack';
     
     // Apply guaranteed damage
-    updateHealth('blue', 20);
+    updateHealth('blue', 5);
     
     // Create impact at player tower
     const blueTower = towers.find(t => t.userData.team === 'blue');
@@ -165,7 +165,7 @@ async function handleTimeout() {
     }
     
     // Add to battle history
-    addToBattleHistory(aiConcept, 'No Defense', 'The attack reached the tower unopposed.', '💥 Direct Tower Hit!', 20);
+    addToBattleHistory(aiConcept, 'No Defense', 'The attack reached the tower unopposed.', '💥 Direct Tower Hit!', 5);
     
     // Reset state and trigger next AI attack
     gameState.currentActiveAttack = null;

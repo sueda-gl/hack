@@ -28,7 +28,7 @@ Both are classified as `direct_win` with different `winner` values. This is conf
   "outcome_type": "direct_win" | "backfire_win" | "neutral_no_damage" | "mutual_destruction",
   "attacker_damage": 0 | 1,
   "defender_damage": 0 | 1,
-  "damage_amount": 0-40,
+  "damage_amount": 0-10,
   "explanation": "...",
   "teaching_point": "..."
 }

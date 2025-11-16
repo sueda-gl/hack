@@ -103,8 +103,8 @@ Try these concept combinations to see the AI's logic:
 2. **Counter Attack** - Triggers AI analysis
 3. **AI Reasoning** - GPT analyzes real-world interactions
 4. **Outcome** - Three possibilities:
-   - **DEFEAT** - Attacker wins, defender takes damage (0-40 HP)
-   - **BLOCKED** - Defender wins, attacker takes damage (0-40 HP)
+   - **DEFEAT** - Attacker wins, defender takes damage (0-10 HP)
+   - **BLOCKED** - Defender wins, attacker takes damage (0-10 HP)
    - **NEUTRAL** - Both take half damage
 
 ### Visual Feedback

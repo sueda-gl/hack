@@ -19,7 +19,7 @@ function getTutorialOutcomeGuidance(attackingConcept, defendingConcept) {
             winner: "defender",
             attacker_damage: 1,
             defender_damage: 0,
-            damage_amount: 30,
+            damage_amount: 8,
             lesson_focus: "DIRECT WIN - when your defense neutralizes the attack AND continues forward to damage the opponent's tower"
         },
         
@@ -29,7 +29,7 @@ function getTutorialOutcomeGuidance(attackingConcept, defendingConcept) {
             winner: "attacker",
             attacker_damage: 0,
             defender_damage: 1,
-            damage_amount: 35,
+            damage_amount: 9,
             lesson_focus: "BACKFIRE - when your defense amplifies or fuels the attack, causing it to explode at YOUR tower"
         },
         
@@ -49,7 +49,7 @@ function getTutorialOutcomeGuidance(attackingConcept, defendingConcept) {
             winner: "none",
             attacker_damage: 1,
             defender_damage: 1,
-            damage_amount: 25,
+            damage_amount: 6,
             lesson_focus: "MUTUAL DESTRUCTION - when two symmetric forces collide and both are damaged equally"
         },
         
@@ -59,7 +59,7 @@ function getTutorialOutcomeGuidance(attackingConcept, defendingConcept) {
             winner: "defender",
             attacker_damage: 1,
             defender_damage: 0,
-            damage_amount: 30,
+            damage_amount: 8,
             lesson_focus: "DIRECT WIN with AMPLIFICATION - showing how some defenses amplify power rather than just blocking"
         },
         
@@ -69,7 +69,7 @@ function getTutorialOutcomeGuidance(attackingConcept, defendingConcept) {
             winner: "defender",
             attacker_damage: 1,
             defender_damage: 0,
-            damage_amount: 30,
+            damage_amount: 8,
             lesson_focus: "DIRECT WIN with ENVIRONMENTAL AMPLIFICATION - weak concepts can become powerful in the right environment"
         }
     };
@@ -236,11 +236,11 @@ THINK STEP BY STEP before deciding:
    - ALWAYS explain WHY attack can't affect defender, don't just say "incompatible"
 
 4. **Damage Logic** (RED tower = AI's tower, BLUE tower = your tower): 
-   - DIRECT_WIN: 20-40 damage to RED tower (AI's tower) only
-   - DIRECT_LOSS: 20-40 damage to BLUE tower (your tower) only
-   - BACKFIRE_WIN: 25-40 damage to BLUE tower (your tower) only - usually higher damage
+   - DIRECT_WIN: 5-10 damage to RED tower (AI's tower) only
+   - DIRECT_LOSS: 5-10 damage to BLUE tower (your tower) only
+   - BACKFIRE_WIN: 6-10 damage to BLUE tower (your tower) only - usually higher damage
    - NEUTRAL_NO_DAMAGE: 0 damage to both towers
-   - MUTUAL_DESTRUCTION: 15-30 damage to BOTH towers (RED and BLUE)
+   - MUTUAL_DESTRUCTION: 4-8 damage to BOTH towers (RED and BLUE)
 
 5. **Continuation After Stopping Attack** (CRITICAL):
    - If defender STOPS attack successfully, ask: "Does defender continue forward to damage attacker's tower?"
@@ -281,7 +281,7 @@ Respond with VALID JSON ONLY (no markdown, no code blocks):
   "winner": "attacker" | "defender" | "none",
   "attacker_damage": 0 | 1,
   "defender_damage": 0 | 1,
-  "damage_amount": 0-40
+  "damage_amount": 0-10
 }
 
 IMPORTANT: Your response must include TWO explanations:
@@ -778,11 +778,11 @@ Your job: Determine how two concepts would interact in a battle, considering phy
 4. **Clear Winner**: Explanation MUST state who wins and which tower(s) are damaged (BLUE = player, RED = AI)
 
 5. **Damage Logic**: 
-   - DIRECT_WIN: 20-40 damage to RED tower (attacker) only
-   - DIRECT_LOSS: 20-40 damage to BLUE tower (defender) only
-   - BACKFIRE_WIN: 25-40 damage to BLUE tower (defender) only - usually higher damage
+   - DIRECT_WIN: 5-10 damage to RED tower (attacker) only
+   - DIRECT_LOSS: 5-10 damage to BLUE tower (defender) only
+   - BACKFIRE_WIN: 6-10 damage to BLUE tower (defender) only - usually higher damage
    - NEUTRAL_NO_DAMAGE: 0 damage to both
-   - MUTUAL_DESTRUCTION: 15-30 damage to BOTH towers
+   - MUTUAL_DESTRUCTION: 4-8 damage to BOTH towers
 
 ## RESPONSE FORMAT:
 
@@ -793,7 +793,7 @@ Respond with VALID JSON ONLY (no markdown, no code blocks):
   "outcome_type": "direct_win" | "direct_loss" | "backfire_win" | "neutral_no_damage" | "mutual_destruction",
   "attacker_damage": 0 | 1,
   "defender_damage": 0 | 1,
-  "damage_amount": 0-40,
+  "damage_amount": 0-10,
   "explanation": "Clear sentence: WHO wins, WHAT happens, WHICH tower(s) damaged (BLUE=player, RED=AI)",
   "teaching_point": "What this teaches about concept interactions"
 }
@@ -925,7 +925,7 @@ function parseJSONResponse(content) {
         parsed.defender_damage = parsed.defender_damage ? 1 : 0;
         
         // Clamp damage amount
-        parsed.damage_amount = Math.min(Math.max(parsed.damage_amount || 0, 0), 40);
+        parsed.damage_amount = Math.min(Math.max(parsed.damage_amount || 0, 0), 10);
         
         // Validate outcome_type
         const validOutcomes = ['direct_win', 'direct_loss', 'backfire_win', 'neutral_no_damage', 'mutual_destruction'];
@@ -958,14 +958,14 @@ function fallbackTextParse(content) {
         let winner = 'none';
         let attacker_damage = 0;
         let defender_damage = 0;
-        let damage_amount = 20;
+        let damage_amount = 5;
         
         // Detect outcome type from keywords
         if (lowerContent.includes('backfire') || lowerContent.includes('explodes on') || lowerContent.includes('amplifies')) {
             outcome_type = 'backfire_win';
             winner = 'attacker';
             defender_damage = 1;
-            damage_amount = 30;
+            damage_amount = 8;
         } else if (lowerContent.includes('no effect') || lowerContent.includes('no damage') || lowerContent.includes("doesn't interact")) {
             outcome_type = 'neutral_no_damage';
             winner = 'none';
@@ -975,12 +975,12 @@ function fallbackTextParse(content) {
             winner = 'none';
             attacker_damage = 1;
             defender_damage = 1;
-            damage_amount = 20;
+            damage_amount = 5;
         } else if (lowerContent.includes('player wins') || lowerContent.includes('defender wins') || lowerContent.includes('blue tower safe')) {
             outcome_type = 'direct_win';
             winner = 'defender';
             attacker_damage = 1;
-            damage_amount = 30;
+            damage_amount = 8;
         } else if (lowerContent.includes('ai wins') || lowerContent.includes('attacker wins') || lowerContent.includes('defense fails') || lowerContent.includes('blue tower damaged')) {
             // Check for backfire keywords - if present, use backfire, otherwise direct_loss
             if (lowerContent.includes('backfire') || lowerContent.includes('amplif') || lowerContent.includes('fuel')) {
@@ -990,7 +990,7 @@ function fallbackTextParse(content) {
             }
             winner = 'attacker';
             defender_damage = 1;
-            damage_amount = 30;
+            damage_amount = 8;
         }
         
         return {
