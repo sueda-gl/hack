@@ -406,6 +406,63 @@
             white-space: nowrap;
         }
 
+        /* Pulse Animation for Click to Start */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.6;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+        }
+
+        /* Music Toggle Button */
+        #music-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.85);
+            border: none;
+            border-radius: 0;
+            padding: 12px 20px;
+            color: white;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 0 0 3px rgba(255, 255, 255, 0.3),
+                0 0 0 6px rgba(0, 0, 0, 0.6),
+                4px 4px 0 0 rgba(0, 0, 0, 0.5);
+            transition: all 0.2s ease;
+            z-index: 10;
+            text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8);
+            image-rendering: pixelated;
+        }
+
+        #music-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 0 0 3px rgba(255, 255, 255, 0.5),
+                0 0 0 6px rgba(0, 0, 0, 0.8),
+                6px 6px 0 0 rgba(0, 0, 0, 0.6);
+        }
+
+        #music-toggle:active {
+            transform: translateY(1px);
+            box-shadow: 
+                0 0 0 3px rgba(255, 255, 255, 0.3),
+                0 0 0 6px rgba(0, 0, 0, 0.6),
+                2px 2px 0 0 rgba(0, 0, 0, 0.5);
+        }
+
+        #music-icon {
+            font-size: 14px;
+            margin-right: 8px;
+        }
+
     </style>
 </head>
 <body>
@@ -435,13 +492,19 @@
                 <span class="hp-text" id="red-hp-text">100/100</span>
             </div>
         </div>
+        
+        <!-- Music Toggle Button -->
+        <button id="music-toggle" onclick="toggleMusic()">
+            <span id="music-icon">🔊</span> MUSIC
+        </button>
     </div>
     
     <!-- Splash Screen -->
-    <div id="splash-screen" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); z-index: 9999; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.5s;">
-        <div style="text-align: center; color: white;">
+    <div id="splash-screen" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); z-index: 9999; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.5s; cursor: pointer;">
+        <div style="text-align: center; color: white; pointer-events: none;">
             <h1 style="font-size: 48px; margin-bottom: 20px; text-shadow: 0 0 20px #4444ff;">⚔️ DEFEND YOUR TOWERS! ⚔️</h1>
             <p style="font-size: 24px; color: #aaa;">AI will attack first - counter their concepts!</p>
+            <p style="font-size: 16px; color: #4444ff; margin-top: 40px; animation: pulse 1.5s infinite; font-family: 'Press Start 2P', cursive;">👆 CLICK ANYWHERE TO START 👆</p>
         </div>
     </div>
     

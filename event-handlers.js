@@ -1,6 +1,36 @@
 // Event Handlers and Control Functions
 // Depends on: scene-setup.js, character-animations.js
 
+// Background Music Manager
+let backgroundMusic = null;
+
+function initBackgroundMusic() {
+    if (!backgroundMusic) {
+        backgroundMusic = new Audio('audio/battle-theme.mp3');
+        backgroundMusic.loop = true;
+        backgroundMusic.volume = 0.5;
+    }
+    backgroundMusic.play().catch(err => {
+        console.warn('Audio playback failed:', err);
+    });
+}
+
+function toggleMusic() {
+    if (backgroundMusic) {
+        if (backgroundMusic.paused) {
+            backgroundMusic.play().catch(err => {
+                console.warn('Audio playback failed:', err);
+            });
+            document.getElementById('music-icon').textContent = '🔊';
+        } else {
+            backgroundMusic.pause();
+            document.getElementById('music-icon').textContent = '🔇';
+        }
+    } else {
+        console.warn('Music not initialized yet. Click splash screen to start.');
+    }
+}
+
 function toggleRotation() {
     isRotating = !isRotating;
     console.log('Camera rotation:', isRotating ? 'ENABLED' : 'DISABLED');
@@ -38,15 +68,19 @@ async function showSplashScreen() {
         splash.style.display = 'flex';
         splash.style.opacity = '1';
         
-        // Hide after 3 seconds and start AI attack
-        setTimeout(() => {
+        // Wait for user click to start game and audio
+        splash.addEventListener('click', function startGame() {
+            // Initialize and start background music
+            initBackgroundMusic();
+            
+            // Hide splash screen with fade
             splash.style.opacity = '0';
             setTimeout(() => {
                 splash.style.display = 'none';
                 gameState.gameStarted = true;
                 initiateAIAttack();
             }, 500); // Wait for fade out
-        }, 3000);
+        }, { once: true }); // 'once' ensures single execution
     } else {
         // Fallback if splash screen not found
         setTimeout(() => {
